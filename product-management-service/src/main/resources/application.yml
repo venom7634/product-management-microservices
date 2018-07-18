@@ -1,0 +1,13 @@
+spring:
+  application:
+     name: applications-service
+
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:1111/eureka/
+
+server:
+  port: 2222
