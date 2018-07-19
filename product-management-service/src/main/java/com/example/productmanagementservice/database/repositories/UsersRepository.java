@@ -11,9 +11,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UsersRepository {
 
-    @Select("SELECT * FROM users WHERE login = #{login}")
-    User getUserByLogin(@Param("login") String login);
-
     @Select("SELECT * FROM users WHERE id = #{id}")
     User getUserById(@Param("id") long id);
 
