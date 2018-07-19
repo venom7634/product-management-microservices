@@ -13,16 +13,13 @@ import java.util.List;
 @Repository
 public interface UsersRepository {
 
-    @Update("UPDATE users SET token = #{token} WHERE login = #{login}")
-    void addTokenInDatabase(@Param("token") String token, @Param("login") String login);
-
     @Select("SELECT * FROM users WHERE login = #{login}")
     List<User> getUsersByLogin(@Param("login") String login);
 
     @Select("SELECT * FROM users WHERE id = #{id}")
     List<User> getUsersById(@Param("id") long id);
 
-    @Select("select users.id, login, password, token, security, users.name, users.description " +
+    @Select("select users.id, login, password, security, users.name, users.description " +
             "from users JOIN applications ON users.id = client_id where applications.id = #{id}")
     List<User> getUsersByIdApplication(@Param("id") long idApplication);
 }

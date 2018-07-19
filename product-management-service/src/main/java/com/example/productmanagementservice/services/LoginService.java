@@ -46,8 +46,6 @@ public class LoginService {
                 .setAudience(user.getSecurity() + "")
                 .compact();
 
-        usersRepository.addTokenInDatabase(token, login);
-
         return token;
     }
 

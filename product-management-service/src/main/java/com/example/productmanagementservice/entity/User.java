@@ -11,7 +11,6 @@ public class User {
     String login;
     String password;
     int security;
-    String token;
     String name;
     String description;
 
@@ -19,14 +18,13 @@ public class User {
 
     }
 
-    public User(int id, String login, String password, String token, int security, String name, String description) {
+    public User(int id, String login, String password, int security, String name, String description) {
         this.id = id;
         this.login = login;
         this.password = password;
         this.name = name;
         this.security = security;
         this.description = description;
-        this.token = token;
     }
 
     public int getSecurity() {
@@ -49,10 +47,6 @@ public class User {
         this.password = password;
     }
 
-    public void setToken(String token) {
-        this.token = token;
-    }
-
     public void setName(String name) {
         this.name = name;
     }
@@ -72,10 +66,6 @@ public class User {
 
     public String getPassword() {
         return password;
-    }
-
-    public String getToken() {
-        return token;
     }
 
     public String getName() {
