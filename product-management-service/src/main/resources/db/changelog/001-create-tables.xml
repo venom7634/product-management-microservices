@@ -87,7 +87,7 @@
         <!--jdbcTemplate.execute("CREATE TABLE applications(" +-->
         <!--"id  INTEGER PRIMARY KEY AUTOINCREMENT," +-->
         <!--"client_id INTEGER NOT NULL," +-->
-        <!--"status INTEGER NOT NULL," +-->
+        <!--"statusApp INTEGER NOT NULL," +-->
         <!--"product NCHAR(20)," +-->
         <!--"limitOnCard INTEGER," +-->
         <!--"amount INTEGER," +-->

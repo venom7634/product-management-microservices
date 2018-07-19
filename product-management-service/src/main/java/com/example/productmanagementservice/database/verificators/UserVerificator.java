@@ -2,6 +2,7 @@ package com.example.productmanagementservice.database.verificators;
 
 import com.example.productmanagementservice.database.repositories.UsersRepository;
 import com.example.productmanagementservice.entity.User;
+import com.example.productmanagementservice.exceptions.NoAccessException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,33 +18,21 @@ public class UserVerificator {
         this.usersRepository = usersRepository;
     }
 
-    public boolean checkingUser(String login, String password) {
-        List<User> users = usersRepository.getUsersByLogin(login);
-
-        if (!users.isEmpty()) {
-            return users.get(0).getPassword().equals(password);
+    public boolean checkingUser(List<User> users, String password) {
+        if (!users.isEmpty() && users.get(0).getPassword().equals(password)) {
+            return true;
         }
-
-        return false;
+        throw new NoAccessException();
     }
 
-    public boolean authenticationOfBankEmployee(String token) {
-        User user = getUserOfToken(token);
-        return user.getSecurity() == User.access.EMPLOYEE_BANK.ordinal();
+    public boolean authenticationOfBankEmployee(int securityStatus) {
+        return securityStatus == User.access.EMPLOYEE_BANK.ordinal();
     }
 
-    public boolean checkTokenInDatabase(String token) {
-        User user = getUserOfToken(token);
-        return !(user == null);
-    }
-
-    public User getUserOfToken(String token) {
-        List<User> users = usersRepository.getUsersByToken(token);
-
-        if (users.isEmpty()) {
-            return null;
+    public boolean isExistsUser(List<User> users) {
+        if(users.isEmpty()){
+            throw new NoAccessException();
         }
-
-        return users.get(0);
+        return true;
     }
 }

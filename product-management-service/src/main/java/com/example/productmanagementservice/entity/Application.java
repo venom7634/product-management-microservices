@@ -8,7 +8,7 @@ public class Application {
 
     int id;
 
-    public enum status {
+    public enum statusApp {
         CREATED,
         SENT,
         APPROVED,
@@ -17,7 +17,7 @@ public class Application {
 
     @JsonIgnore
     private int client_id;
-
+    int status;
     private String product;
     private String limit;
     private String amount;
@@ -68,7 +68,6 @@ public class Application {
         this.limit = limit;
     }
 
-
     public String getAmount() {
         return amount;
     }
@@ -83,5 +82,13 @@ public class Application {
 
     public void setTimeInMonth(String timeInMonth) {
         this.timeInMonth = timeInMonth;
+    }
+   
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 }

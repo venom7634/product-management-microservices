@@ -2,11 +2,15 @@ package com.example.productmanagementservice.database.verificators;
 
 import com.example.productmanagementservice.database.repositories.ApplicationsRepository;
 import com.example.productmanagementservice.entity.Application;
-import com.example.productmanagementservice.entity.User;
+import com.example.productmanagementservice.exceptions.ApplicationNoExistsException;
+import com.example.productmanagementservice.exceptions.IncorrectValueException;
+import com.example.productmanagementservice.exceptions.NoAccessException;
+import com.example.productmanagementservice.exceptions.NotMatchUserException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class ApplicationVerificator {
@@ -20,52 +24,62 @@ public class ApplicationVerificator {
         this.applicationsRepository = applicationsRepository;
     }
 
-    public boolean isExistsApplication(long idApplication, int status) {
-        Application application = getApplicationOfIdAndStatus(idApplication, status);
-        return !(application == null);
+    public boolean isExistsApplication(List<Application> applications, long idApplication) {
+        List<Application> createdApplications =
+                applications
+                        .stream()
+                        .filter(app -> app.getStatus() == Application.statusApp.CREATED.ordinal()
+                                && app.getId() == idApplication)
+                        .collect(Collectors.toList());
+
+        if (createdApplications.isEmpty()){
+            throw new ApplicationNoExistsException();
+        }
+        return true;
     }
 
-    public boolean verificationOfBelongingApplicationToClient(long idApplication, String token) {
-        User user = userVerificator.getUserOfToken(token);
+    public boolean verificationOfBelongingApplicationToClient(List<Application> applications, long userId, long idApplication) {
+        List<Application> filteredApplications =
+                applications
+                        .stream()
+                        .filter(app -> app.getClient_id() == userId && app.getId() == idApplication)
+                        .collect(Collectors.toList());
 
-        List<Application> applications = applicationsRepository.getUserApplicationsById(idApplication, user.getId());
-
-        return !applications.isEmpty();
+        if(filteredApplications.isEmpty()){
+            throw new NotMatchUserException();
+        }
+        return true;
     }
 
-    public boolean isExistsApplication(long idApplication) {
-        Application application = getApplicationOfId(idApplication);
-        return !(application == null);
+
+
+    public boolean checkForChangeStatusApplication(List<Application> applications, long idApplication) {
+        List<Application> filteredApplications =
+                applications
+                        .stream()
+                        .filter(app -> app.getStatus() == Application.statusApp.SENT.ordinal()
+                                && app.getId() == idApplication)
+                        .collect(Collectors.toList());
+        if(filteredApplications.isEmpty()){
+            throw new NoAccessException();
+        }
+        return true;
     }
 
-    public boolean checkForChangeStatusApplication(long idApplication) {
-        Application application = getApplicationOfIdAndStatus(idApplication, Application.status.SENT.ordinal());
-        return !(application == null);
-    }
+    public boolean checkIsEmptyOfApplication(List<Application> applications, long idApplication) {
+        List<Application> filteredApplications =
+                applications
+                        .stream()
+                        .filter(app -> app.getId() == idApplication)
+                        .collect(Collectors.toList());
 
-    public boolean checkIsEmptyOfApplication(long idApplication) {
-        Application application = getApplicationOfId(idApplication);
-        String product = application.getProduct();
-        return (product == null);
-    }
-
-    public Application getApplicationOfId(long idApplication) {
-        List<Application> applications = applicationsRepository.getApplicationsById(idApplication);
-
-        if (applications.isEmpty()) {
-            return null;
+        if(filteredApplications.isEmpty()){
+            throw new ApplicationNoExistsException();
+        }
+        if(filteredApplications.get(0).getProduct() == null){
+            throw new IncorrectValueException();
         }
 
-        return applications.get(0);
-    }
-
-    public Application getApplicationOfIdAndStatus(long idApplication, int status) {
-        List<Application> applications = applicationsRepository.getApplicationsByIdAndStatus(idApplication, status);
-
-        if (applications.isEmpty()) {
-            return null;
-        }
-
-        return applications.get(0);
+        return true;
     }
 }

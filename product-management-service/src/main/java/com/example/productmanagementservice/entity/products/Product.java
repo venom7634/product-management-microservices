@@ -15,6 +15,10 @@ public class Product {
         type(String name){
             this.name = name;
         }
+
+        public String getName(){
+            return this.name;
+        }
     }
 
     String description;

@@ -11,8 +11,10 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Calendar;
-
+import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.List;
 
 @Service
 public class LoginService {
@@ -27,23 +29,22 @@ public class LoginService {
     }
 
     public Token login(String login, String password) {
-        if (!userVerificator.checkingUser(login, password)) {
-            throw new NoAccessException();
-        }
+        List<User> users = usersRepository.getUsersByLogin(login);
+        userVerificator.checkingUser(users, password);
 
         return new Token(createToken(login));
     }
 
     private String createToken(String login) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.MINUTE, 30);
+        LocalDateTime localDateTime = LocalDateTime.now().plusMinutes(30);
+        Date date = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
 
         User user = usersRepository.getUsersByLogin(login).get(0);
 
         String token = Jwts.builder()
                 .setSubject("" + user.getId())
                 .signWith(SignatureAlgorithm.HS512, login)
-                .setExpiration(calendar.getTime())
+                .setExpiration(date)
                 .setAudience(user.getSecurity() + "")
                 .compact();
 
@@ -57,15 +58,12 @@ public class LoginService {
         return Long.parseLong(Jwts.parser().setSigningKey(key).parseClaimsJws(token).getBody().getSubject());
     }
 
-    public boolean checkTokenOnValidation(String token) {
-        String key = usersRepository.getUsersByToken(token).get(0).getLogin();
-
+    public boolean checkTokenOnValidation(String token, String login) {
         try {
-            Jwts.parser().setSigningKey(key).parseClaimsJws(token).getBody().getExpiration();
+            Jwts.parser().setSigningKey(login).parseClaimsJws(token).getBody().getExpiration();
         } catch (ExpiredJwtException e) {
-            return false;
+            throw new NoAccessException();
         }
-
         return true;
     }
 }

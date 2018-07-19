@@ -7,6 +7,7 @@ import com.example.productmanagementservice.database.verificators.ApplicationVer
 import com.example.productmanagementservice.database.verificators.ProductsVerificator;
 import com.example.productmanagementservice.database.verificators.UserVerificator;
 import com.example.productmanagementservice.entity.Application;
+import com.example.productmanagementservice.entity.User;
 import com.example.productmanagementservice.exceptions.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,11 +24,13 @@ public class ApplicationService {
     private final ProductsRepository productsRepository;
     private final LoginService loginService;
     private final UsersRepository usersRepository;
+    private final ProductService productService;
 
     @Autowired
     public ApplicationService(LoginService loginService, ApplicationsRepository applicationsRepository,
                               ProductsRepository productsRepository, ApplicationVerificator applicationVerificator,
-                              ProductsVerificator productsVerificator, UserVerificator userVerificator, UsersRepository usersRepository) {
+                              ProductsVerificator productsVerificator, UserVerificator userVerificator,
+                              ProductService productService, UsersRepository usersRepository) {
         this.loginService = loginService;
         this.applicationsRepository = applicationsRepository;
         this.productsRepository = productsRepository;
@@ -35,37 +38,38 @@ public class ApplicationService {
         this.productsVerificator = productsVerificator;
         this.userVerificator = userVerificator;
         this.usersRepository = usersRepository;
+        this.productService = productService;
     }
 
-    public boolean checkToken(String token) {
-        if (userVerificator.checkTokenInDatabase(token)) {
-            return loginService.checkTokenOnValidation(token);
-        }
+    private boolean checkToken(List<User> users, String token) {
+        userVerificator.isExistsUser(users);
+        loginService.checkTokenOnValidation(token, users.get(0).getLogin());
+
         return false;
     }
 
     public Application createApplication(String token) {
-        if (!checkToken(token)) {
-            throw new NoAccessException();
-        }
+        List<User> users = usersRepository.getUsersByToken(token);
+        checkToken(users, token);
         return createNewApplication(token);
     }
 
     public void addDebitCardToApplication(String token, long idApplication) {
-        if (applicationVerificator.isExistsApplication(idApplication, Application.status.CREATED.ordinal())) {
-            checkForAddProduct(token, idApplication);
-            productsRepository.addDebitCardToApplication(idApplication);
-        } else {
-            throw new ApplicationNoExistsException();
-        }
+        List<User> users = usersRepository.getUsersByToken(token);
+        List<Application> applications = applicationsRepository.getAllClientApplications(users.get(0).getId());
+
+        applicationVerificator.isExistsApplication(applications, idApplication);
+        checkForAddProduct(users, token, idApplication);
+
+        productsRepository.addDebitCardToApplication(idApplication);
     }
 
     public void addCreditCardToApplication(String token, long idApplication, int limit) {
-        if (!applicationVerificator.isExistsApplication(idApplication, Application.status.CREATED.ordinal())) {
-            throw new ApplicationNoExistsException();
-        }
+        List<User> users = usersRepository.getUsersByToken(token);
+        List<Application> applications = applicationsRepository.getAllClientApplications(users.get(0).getId());
 
-        checkForAddProduct(token, idApplication);
+        applicationVerificator.isExistsApplication(applications, idApplication);
+        checkForAddProduct(users, token, idApplication);
 
         if (limit > 0 || limit <= 1000) {
             productsRepository.addCreditCardToApplication(idApplication, limit);
@@ -75,11 +79,11 @@ public class ApplicationService {
     }
 
     public void addCreditCashToApplication(String token, long idApplication, int amount, int timeInMonth) {
-        if (!applicationVerificator.isExistsApplication(idApplication, Application.status.CREATED.ordinal())) {
-            throw new ApplicationNoExistsException();
-        }
+        List<User> users = usersRepository.getUsersByToken(token);
+        List<Application> applications = applicationsRepository.getAllClientApplications(users.get(0).getId());
 
-        checkForAddProduct(token, idApplication);
+        applicationVerificator.isExistsApplication(applications, idApplication);
+        checkForAddProduct(users, token, idApplication);
 
         if ((amount > 0 || amount <= 1000) || timeInMonth > 0) {
             productsRepository.addCreditCashToApplication(idApplication, amount, timeInMonth);
@@ -88,118 +92,92 @@ public class ApplicationService {
         }
     }
 
-    public void checkForAddProduct(String token, long idApplication) {
-        if (!checkToken(token)) {
-            throw new ApplicationNoExistsException();
-        }
-
-        if (!applicationVerificator.verificationOfBelongingApplicationToClient(idApplication, token)) {
-            throw new NotMatchUserException();
-        }
+    private void checkForAddProduct(List<User> users, String token, long idApplication) {
+        checkToken(users, token);
+        List<Application> applications = applicationsRepository.getAllClientApplications(users.get(0).getId());
+        applicationVerificator.verificationOfBelongingApplicationToClient(applications, users.get(0).getId(), idApplication);
     }
 
     public List<Application> getApplicationsForApproval(String token) {
-        if (!checkToken(token)) {
-            throw new NoAccessException();
-        } else {
-            return applicationsRepository.getListSentApplicationsOfDataBase
-                    (userVerificator.getUserOfToken(token).getId(), Application.status.SENT.ordinal());
-        }
+        List<User> users = usersRepository.getUsersByToken(token);
+        checkToken(users, token);
+        return applicationsRepository
+                .getListSentApplicationsOfDataBase(users.get(0).getId(), Application.statusApp.SENT.ordinal());
+
     }
 
     public void sendApplicationForApproval(String token, long idApplication) {
-        if (!applicationVerificator.isExistsApplication(idApplication, 0)) {
-            throw new ApplicationNoExistsException();
-        }
+        List<User> users = usersRepository.getUsersByToken(token);
+        List<Application> applications = applicationsRepository.getAllClientApplications(users.get(0).getId());
 
-        if (!checkToken(token) || productsVerificator.checkProductInApplicationsClient(idApplication)) {
-            throw new NoAccessException();
-        }
+        checkToken(users, token);
+        applicationVerificator.isExistsApplication(applications, idApplication);
+        applicationVerificator.verificationOfBelongingApplicationToClient(applications, users.get(0).getId(), idApplication);
+        applicationVerificator.checkIsEmptyOfApplication(applications, idApplication);
+        productsVerificator.checkProductInApplicationsClient
+                (productService.getProductApplication(applications, idApplication), applications);
+        checkTotalAmountMoneyHasReachedMax(idApplication);
 
-        if (!applicationVerificator.verificationOfBelongingApplicationToClient(idApplication, token)) {
-            throw new NotMatchUserException();
-        }
-
-        if (applicationVerificator.checkIsEmptyOfApplication(idApplication)) {
-            throw new IncorrectValueException();
-        }
-
-        if (checkTotalAmountMoneyHasReachedMax(idApplication)) {
-            throw new MaxAmountCreditReachedException();
-        }
-
-        applicationsRepository.sendApplicationToConfirmation(idApplication, Application.status.SENT.ordinal());
+        applicationsRepository.sendApplicationToConfirmation(idApplication, Application.statusApp.SENT.ordinal());
     }
 
     public List<Application> getApplicationsClientForApproval(long userId, String token) {
-        if (userVerificator.authenticationOfBankEmployee(token) || !checkToken(token)) {
-            return applicationsRepository.getListSentApplicationsOfDataBase(userId, Application.status.SENT.ordinal());
-        } else {
-            throw new NoAccessException();
-        }
+        List<User> users = usersRepository.getUsersByToken(token);
+
+        checkToken(users, token);
+        userVerificator.authenticationOfBankEmployee(users.get(0).getSecurity());
+
+        return applicationsRepository.getListSentApplicationsOfDataBase(userId, Application.statusApp.SENT.ordinal());
+
     }
 
     public void approveApplication(long idApplication, String token) {
-        if (!checkToken(token) || !applicationVerificator.checkForChangeStatusApplication(idApplication) ||
-                productsVerificator.checkProductInApplicationsClient(idApplication)) {
-            throw new NoAccessException();
-        }
+        List<User> users = usersRepository.getUsersByToken(token);
+        List<Application> applications = applicationsRepository
+                .getAllClientApplications(usersRepository.getUsersByIdApplication(idApplication).get(0).getId());
 
-        if (!applicationVerificator.isExistsApplication(idApplication, Application.status.SENT.ordinal())) {
-            throw new ApplicationNoExistsException();
-        }
+        checkToken(users, token);
+        applicationVerificator.isExistsApplication(applications, idApplication);
+        applicationVerificator.checkForChangeStatusApplication(applications, idApplication);
+        productsVerificator.checkProductInApplicationsClient
+                (productService.getProductApplication(applications, idApplication), applications);
+        userVerificator.authenticationOfBankEmployee(users.get(0).getSecurity());
+        checkTotalAmountMoneyHasReachedMax(idApplication);
 
-        if (checkTotalAmountMoneyHasReachedMax(idApplication)) {
-            throw new IncorrectValueException();
-        }
+        applicationsRepository.setNegativeOfAllIdenticalProducts
+                (applicationsRepository.getApplicationsById(idApplication).get(0).getProduct(),
+                        Application.statusApp.NEGATIVE.ordinal());
+        applicationsRepository.approveApplication(idApplication, Application.statusApp.APPROVED.ordinal());
 
-        if (userVerificator.authenticationOfBankEmployee(token)) {
-            applicationsRepository.setNegativeOfAllIdenticalProducts
-                    (applicationsRepository.getApplicationsById(idApplication).get(0).getProduct(),
-                            Application.status.NEGATIVE.ordinal());
-
-            applicationsRepository.approveApplication(idApplication, Application.status.APPROVED.ordinal());
-        } else {
-            throw new PageNotFoundException();
-        }
     }
 
     public void negativeApplication(long idApplication, String token, String reason) {
-        if (!applicationVerificator.isExistsApplication(idApplication)) {
-            throw new ApplicationNoExistsException();
-        }
-        if (!applicationVerificator.checkForChangeStatusApplication(idApplication)) {
-            throw new NoAccessException();
-        }
+        List<User> users = usersRepository.getUsersByToken(token);
+        List<Application> applications = applicationsRepository
+                .getAllClientApplications(usersRepository.getUsersByIdApplication(idApplication).get(0).getId());
 
-        if (userVerificator.authenticationOfBankEmployee(token) || !checkToken(token)) {
-            applicationsRepository.negativeApplication(idApplication, reason, Application.status.NEGATIVE.ordinal());
-        } else {
-            throw new NoAccessException();
-        }
+        checkToken(users, token);
+        applicationVerificator.isExistsApplication(applications, idApplication);
+        applicationVerificator.checkForChangeStatusApplication(applications, idApplication);
+        userVerificator.authenticationOfBankEmployee(users.get(0).getSecurity());
+
+        applicationsRepository.negativeApplication(idApplication, reason, Application.statusApp.NEGATIVE.ordinal());
+
     }
 
     public Application createNewApplication(String token) {
-        Application result = new Application();
-        result.setId(0);
+        applicationsRepository.createNewApplicationInDatabase(loginService.getIdByToken(token),
+                Application.statusApp.CREATED.ordinal());
+        List<Application> applications = applicationsRepository.getNewApplication(loginService.getIdByToken(token));
 
-        applicationsRepository.createNewApplicationInDatabase(loginService.getIdByToken(token), Application.status.CREATED.ordinal());
-        List<Application> applications = applicationsRepository.getAllClientApplications
-                (loginService.getIdByToken(token), Application.status.CREATED.ordinal());
-
-        for (Application app : applications) {
-            if (app.getId() > result.getId()) {
-                result = app;
-            }
-        }
-        return result;
+        return applications.get(0);
     }
 
     public boolean checkTotalAmountMoneyHasReachedMax(long idApplication) {
         int totalAmount = 0;
 
         List<Application> applications = applicationsRepository.getListApprovedApplicationsOfDatabase
-                (usersRepository.getUsersByIdApplication(idApplication).get(0).getId(), Application.status.APPROVED.ordinal());
+                (usersRepository.getUsersByIdApplication(idApplication).get(0).getId(), Application.statusApp.APPROVED.ordinal());
 
         for (Application app : applications) {
             if (app.getAmount() != null) {
@@ -210,21 +188,21 @@ public class ApplicationService {
             }
         }
 
-        Application application = applicationVerificator.getApplicationOfId(idApplication);
+        Application application = applicationsRepository.getApplicationsById(idApplication).get(0);
 
         if (application.getLimit() != null) {
             if ((Integer.parseInt(application.getLimit()) + totalAmount) <= 1000) {
-                return false;
+                throw new MaxAmountCreditReachedException();
             }
         }
         if (application.getAmount() != null) {
             if ((Integer.parseInt(application.getAmount()) + totalAmount) <= 1000) {
-                return false;
+                throw new MaxAmountCreditReachedException();
             }
         }
 
         if (application.getAmount() == null && application.getLimit() == null) {
-            return false;
+            throw new MaxAmountCreditReachedException();
         }
         return true;
     }
