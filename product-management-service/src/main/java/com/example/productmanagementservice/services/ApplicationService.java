@@ -5,7 +5,6 @@ import com.example.productmanagementservice.database.repositories.ProductsReposi
 import com.example.productmanagementservice.database.repositories.UsersRepository;
 import com.example.productmanagementservice.database.verificators.ApplicationVerificator;
 import com.example.productmanagementservice.database.verificators.ProductsVerificator;
-import com.example.productmanagementservice.database.verificators.UserVerificator;
 import com.example.productmanagementservice.entity.Application;
 import com.example.productmanagementservice.entity.User;
 import com.example.productmanagementservice.exceptions.*;
@@ -19,50 +18,48 @@ public class ApplicationService {
 
     private final ApplicationVerificator applicationVerificator;
     private final ProductsVerificator productsVerificator;
-    private final UserVerificator userVerificator;
+    private final UserService userService;
     private final ApplicationsRepository applicationsRepository;
     private final ProductsRepository productsRepository;
-    private final LoginService loginService;
-    private final UsersRepository usersRepository;
     private final ProductService productService;
+    private final UsersRepository usersRepository;
 
     @Autowired
-    public ApplicationService(LoginService loginService, ApplicationsRepository applicationsRepository,
+    public ApplicationService(UserService userService, ApplicationsRepository applicationsRepository,
                               ProductsRepository productsRepository, ApplicationVerificator applicationVerificator,
-                              ProductsVerificator productsVerificator, UserVerificator userVerificator,
-                              ProductService productService, UsersRepository usersRepository) {
-        this.loginService = loginService;
+                              ProductsVerificator productsVerificator, ProductService productService,
+                              UsersRepository usersRepository) {
+        this.usersRepository = usersRepository;
+        this.userService = userService;
         this.applicationsRepository = applicationsRepository;
         this.productsRepository = productsRepository;
         this.applicationVerificator = applicationVerificator;
         this.productsVerificator = productsVerificator;
-        this.userVerificator = userVerificator;
-        this.usersRepository = usersRepository;
         this.productService = productService;
     }
 
     public Application createApplication(String token) {
-        List<User> users = usersRepository.getUsersById(loginService.getIdByToken(token));
-        userVerificator.isExistsUser(users);
+        User user = usersRepository.getUserById(userService.getIdByToken(token));
+        userService.isExistsUser(user);
         return createNewApplication(token);
     }
 
     public void addDebitCardToApplication(String token, long idApplication) {
-        List<User> users = usersRepository.getUsersById(loginService.getIdByToken(token));
-        List<Application> applications = applicationsRepository.getAllClientApplications(users.get(0).getId());
+        User user = usersRepository.getUserById(userService.getIdByToken(token));
+        List<Application> applications = applicationsRepository.getAllClientApplications(user.getId());
 
         applicationVerificator.isExistsApplication(applications, idApplication);
-        checkForAddProduct(users, token, idApplication);
+        checkForAddProduct(user, idApplication);
 
         productsRepository.addDebitCardToApplication(idApplication);
     }
 
     public void addCreditCardToApplication(String token, long idApplication, int limit) {
-        List<User> users = usersRepository.getUsersById(loginService.getIdByToken(token));
-        List<Application> applications = applicationsRepository.getAllClientApplications(users.get(0).getId());
+        User user = usersRepository.getUserById(userService.getIdByToken(token));
+        List<Application> applications = applicationsRepository.getAllClientApplications(user.getId());
 
         applicationVerificator.isExistsApplication(applications, idApplication);
-        checkForAddProduct(users, token, idApplication);
+        checkForAddProduct(user, idApplication);
 
         if (limit > 0 || limit <= 1000) {
             productsRepository.addCreditCardToApplication(idApplication, limit);
@@ -72,11 +69,11 @@ public class ApplicationService {
     }
 
     public void addCreditCashToApplication(String token, long idApplication, int amount, int timeInMonth) {
-        List<User> users = usersRepository.getUsersById(loginService.getIdByToken(token));
-        List<Application> applications = applicationsRepository.getAllClientApplications(users.get(0).getId());
+        User user = usersRepository.getUserById(userService.getIdByToken(token));
+        List<Application> applications = applicationsRepository.getAllClientApplications(user.getId());
 
         applicationVerificator.isExistsApplication(applications, idApplication);
-        checkForAddProduct(users, token, idApplication);
+        checkForAddProduct(user, idApplication);
 
         if ((amount > 0 || amount <= 1000) || timeInMonth > 0) {
             productsRepository.addCreditCashToApplication(idApplication, amount, timeInMonth);
@@ -85,27 +82,26 @@ public class ApplicationService {
         }
     }
 
-    private void checkForAddProduct(List<User> users, String token, long idApplication) {
-        userVerificator.isExistsUser(users);
-        List<Application> applications = applicationsRepository.getAllClientApplications(users.get(0).getId());
-        applicationVerificator.verificationOfBelongingApplicationToClient(applications, users.get(0).getId(), idApplication);
+    private void checkForAddProduct(User user, long idApplication) {
+        userService.isExistsUser(user);
+        List<Application> applications = applicationsRepository.getAllClientApplications(user.getId());
+        applicationVerificator.verificationOfBelongingApplicationToClient(applications, user.getId(), idApplication);
     }
 
     public List<Application> getApplicationsForApproval(String token) {
-        List<User> users = usersRepository.getUsersById(loginService.getIdByToken(token));
-        userVerificator.isExistsUser(users);
-        return applicationsRepository
-                .getListSentApplicationsOfDataBase(users.get(0).getId(), Application.statusApp.SENT.ordinal());
+        User user = usersRepository.getUserById(userService.getIdByToken(token));
+        userService.isExistsUser(user);
+        return applicationsRepository.getListSentApplicationsOfDataBase(user.getId());
 
     }
 
     public void sendApplicationForApproval(String token, long idApplication) {
-        List<User> users = usersRepository.getUsersById(loginService.getIdByToken(token));
-        List<Application> applications = applicationsRepository.getAllClientApplications(users.get(0).getId());
+        User user = usersRepository.getUserById(userService.getIdByToken(token));
+        List<Application> applications = applicationsRepository.getAllClientApplications(user.getId());
 
-        userVerificator.isExistsUser(users);
+        userService.isExistsUser(user);
         applicationVerificator.isExistsApplication(applications, idApplication);
-        applicationVerificator.verificationOfBelongingApplicationToClient(applications, users.get(0).getId(), idApplication);
+        applicationVerificator.verificationOfBelongingApplicationToClient(applications, user.getId(), idApplication);
         applicationVerificator.checkIsEmptyOfApplication(applications, idApplication);
         productsVerificator.checkProductInApplicationsClient
                 (productService.getProductApplication(applications, idApplication), applications);
@@ -115,62 +111,61 @@ public class ApplicationService {
     }
 
     public List<Application> getApplicationsClientForApproval(long userId, String token) {
-        List<User> users = usersRepository.getUsersById(loginService.getIdByToken(token));
+        User user = usersRepository.getUserById(userService.getIdByToken(token));
 
-        userVerificator.isExistsUser(users);
-        userVerificator.authenticationOfBankEmployee(users.get(0).getSecurity());
+        userService.isExistsUser(user);
+        userService.authenticationOfBankEmployee(user.getSecurity());
 
-        return applicationsRepository.getListSentApplicationsOfDataBase(userId, Application.statusApp.SENT.ordinal());
+        return applicationsRepository.getListSentApplicationsOfDataBase(userId);
 
     }
 
     public void approveApplication(long idApplication, String token) {
-        List<User> users = usersRepository.getUsersById(loginService.getIdByToken(token));
+        User user = usersRepository.getUserById(userService.getIdByToken(token));
         List<Application> applications = applicationsRepository
-                .getAllClientApplications(usersRepository.getUsersByIdApplication(idApplication).get(0).getId());
+                .getAllClientApplications(usersRepository.getUserByIdApplication(idApplication).getId());
 
-        userVerificator.isExistsUser(users);
+        userService.isExistsUser(user);
         applicationVerificator.isExistsApplication(applications, idApplication);
         applicationVerificator.checkForChangeStatusApplication(applications, idApplication);
         productsVerificator.checkProductInApplicationsClient
                 (productService.getProductApplication(applications, idApplication), applications);
-        userVerificator.authenticationOfBankEmployee(users.get(0).getSecurity());
+        userService.authenticationOfBankEmployee(user.getSecurity());
         checkTotalAmountMoneyHasReachedMax(idApplication);
 
         applicationsRepository.setNegativeOfAllIdenticalProducts
-                (applicationsRepository.getApplicationsById(idApplication).get(0).getProduct(),
-                        Application.statusApp.NEGATIVE.ordinal());
-        applicationsRepository.approveApplication(idApplication, Application.statusApp.APPROVED.ordinal());
+                (applicationsRepository.getApplicationById(idApplication).getProduct());
+        applicationsRepository.approveApplication(idApplication);
 
     }
 
     public void negativeApplication(long idApplication, String token, String reason) {
-        List<User> users = usersRepository.getUsersById(loginService.getIdByToken(token));
+        User user = usersRepository.getUserById(userService.getIdByToken(token));
         List<Application> applications = applicationsRepository
-                .getAllClientApplications(usersRepository.getUsersByIdApplication(idApplication).get(0).getId());
+                .getAllClientApplications(usersRepository.getUserByIdApplication(idApplication).getId());
 
-        userVerificator.isExistsUser(users);
+        userService.isExistsUser(user);
         applicationVerificator.isExistsApplication(applications, idApplication);
         applicationVerificator.checkForChangeStatusApplication(applications, idApplication);
-        userVerificator.authenticationOfBankEmployee(users.get(0).getSecurity());
+        userService.authenticationOfBankEmployee(user.getSecurity());
 
-        applicationsRepository.negativeApplication(idApplication, reason, Application.statusApp.NEGATIVE.ordinal());
+        applicationsRepository.negativeApplication(idApplication, reason);
 
     }
 
     private Application createNewApplication(String token) {
-        applicationsRepository.createNewApplicationInDatabase(loginService.getIdByToken(token),
+        applicationsRepository.createNewApplicationInDatabase(userService.getIdByToken(token),
                 Application.statusApp.CREATED.ordinal());
-        List<Application> applications = applicationsRepository.getNewApplication(loginService.getIdByToken(token));
+        Application application = applicationsRepository.getNewApplication(userService.getIdByToken(token));
 
-        return applications.get(0);
+        return application;
     }
 
     private boolean checkTotalAmountMoneyHasReachedMax(long idApplication) {
         int totalAmount = 0;
 
-        List<Application> applications = applicationsRepository.getListApprovedApplicationsOfDatabase
-                (usersRepository.getUsersByIdApplication(idApplication).get(0).getId(), Application.statusApp.APPROVED.ordinal());
+        Application application = applicationsRepository.getApplicationById(idApplication);
+        List<Application> applications = applicationsRepository.getListApprovedApplicationsOfDatabase(application.getClientId());
 
         for (Application app : applications) {
             if (app.getAmount() != null) {
@@ -180,8 +175,6 @@ public class ApplicationService {
                 totalAmount += Integer.parseInt(app.getLimit());
             }
         }
-
-        Application application = applicationsRepository.getApplicationsById(idApplication).get(0);
 
         if (application.getLimit() != null) {
             if ((Integer.parseInt(application.getLimit()) + totalAmount) <= 1000) {

@@ -2,11 +2,10 @@ package com.example.productmanagementservice.services;
 
 import com.example.productmanagementservice.database.repositories.ProductsRepository;
 import com.example.productmanagementservice.database.repositories.UsersRepository;
-import com.example.productmanagementservice.database.verificators.UserVerificator;
 import com.example.productmanagementservice.entity.Application;
 import com.example.productmanagementservice.entity.User;
-import com.example.productmanagementservice.entity.products.Product;
-import com.example.productmanagementservice.entity.products.Statistic;
+import com.example.productmanagementservice.entity.Product;
+import com.example.productmanagementservice.dto.Statistic;
 import com.example.productmanagementservice.exceptions.PageNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,15 +16,12 @@ import java.util.List;
 public class ProductService {
 
     private final ProductsRepository productsRepository;
-    private final LoginService loginService;
-    private final UserVerificator userVerificator;
+    private final UserService userService;
     private final UsersRepository usersRepository;
 
     @Autowired
-    public ProductService(UsersRepository usersRepository, LoginService loginService, ProductsRepository productsRepository,
-                          UserVerificator userVerificator) {
-        this.loginService = loginService;
-        this.userVerificator = userVerificator;
+    public ProductService(UserService userService, ProductsRepository productsRepository, UsersRepository usersRepository) {
+        this.userService = userService;
         this.productsRepository = productsRepository;
         this.usersRepository = usersRepository;
     }
@@ -43,11 +39,10 @@ public class ProductService {
     }
 
     public List<Product> getProductsForClient(String token, long userId) {
-        List<User> users = usersRepository.getUsersById(loginService.getIdByToken(token));
+        User user = usersRepository.getUserById(userService.getIdByToken(token));
 
-        userVerificator.isExistsUser(users);
-        loginService.checkTokenOnValidation(token, users.get(0).getLogin());
-        userVerificator.authenticationOfBankEmployee(users.get(0).getSecurity());
+        userService.isExistsUser(user);
+        userService.authenticationOfBankEmployee(user.getSecurity());
 
         return productsRepository.getProductsForClient(Application.statusApp.APPROVED.ordinal(), userId);
     }
@@ -65,21 +60,19 @@ public class ProductService {
     }
 
     public List<Statistic> getStatisticUsesProducts(String token) {
-        List<User> users = usersRepository.getUsersById(loginService.getIdByToken(token));
+        User user = usersRepository.getUserById(userService.getIdByToken(token));
 
-        userVerificator.isExistsUser(users);
-        loginService.checkTokenOnValidation(token, users.get(0).getLogin());
-        userVerificator.authenticationOfBankEmployee(users.get(0).getSecurity());
+        userService.isExistsUser(user);
+        userService.authenticationOfBankEmployee(user.getSecurity());
 
         return calculatePercent(productsRepository.getApprovedStatistics(Application.statusApp.APPROVED.ordinal()));
     }
 
     public List<Statistic> getStatisticsNegativeApplications(String token) {
-        List<User> users = usersRepository.getUsersById(loginService.getIdByToken(token));
+        User user = usersRepository.getUserById(userService.getIdByToken(token));
 
-        userVerificator.isExistsUser(users);
-        loginService.checkTokenOnValidation(token, users.get(0).getLogin());
-        userVerificator.authenticationOfBankEmployee(users.get(0).getSecurity());
+        userService.isExistsUser(user);
+        userService.authenticationOfBankEmployee(user.getSecurity());
 
         return calculatePercent(productsRepository.getNegativeStatistics(Application.statusApp.NEGATIVE.ordinal()));
     }

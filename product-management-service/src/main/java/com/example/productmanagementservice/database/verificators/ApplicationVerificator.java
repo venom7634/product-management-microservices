@@ -31,7 +31,7 @@ public class ApplicationVerificator {
         List<Application> filteredApplications =
                 applications
                         .stream()
-                        .filter(app -> app.getClient_id() == userId && app.getId() == idApplication)
+                        .filter(app -> app.getClientId() == userId && app.getId() == idApplication)
                         .collect(Collectors.toList());
 
         if (filteredApplications.isEmpty()) {

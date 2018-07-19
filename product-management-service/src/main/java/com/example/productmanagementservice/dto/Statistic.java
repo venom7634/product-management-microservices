@@ -1,4 +1,4 @@
-package com.example.productmanagementservice.entity.products;
+package com.example.productmanagementservice.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;

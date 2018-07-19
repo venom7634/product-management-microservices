@@ -1,7 +1,7 @@
 package com.example.productmanagementservice.controllers;
 
-import com.example.productmanagementservice.entity.products.Product;
-import com.example.productmanagementservice.entity.products.Statistic;
+import com.example.productmanagementservice.entity.Product;
+import com.example.productmanagementservice.dto.Statistic;
 import com.example.productmanagementservice.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

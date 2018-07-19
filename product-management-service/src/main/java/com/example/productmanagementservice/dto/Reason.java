@@ -1,4 +1,4 @@
-package com.example.productmanagementservice.entity.data;
+package com.example.productmanagementservice.dto;
 
 public class Reason {
 

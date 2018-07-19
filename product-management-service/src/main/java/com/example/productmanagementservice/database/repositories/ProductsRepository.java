@@ -1,7 +1,7 @@
 package com.example.productmanagementservice.database.repositories;
 
-import com.example.productmanagementservice.entity.products.Product;
-import com.example.productmanagementservice.entity.products.Statistic;
+import com.example.productmanagementservice.entity.Product;
+import com.example.productmanagementservice.dto.Statistic;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;

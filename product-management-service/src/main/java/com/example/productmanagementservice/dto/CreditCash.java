@@ -1,4 +1,6 @@
-package com.example.productmanagementservice.entity.products;
+package com.example.productmanagementservice.dto;
+
+import com.example.productmanagementservice.entity.Product;
 
 public class CreditCash extends Product {
 

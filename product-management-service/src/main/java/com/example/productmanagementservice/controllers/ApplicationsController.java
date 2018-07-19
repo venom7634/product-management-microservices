@@ -1,9 +1,9 @@
 package com.example.productmanagementservice.controllers;
 
 import com.example.productmanagementservice.entity.Application;
-import com.example.productmanagementservice.entity.data.Reason;
-import com.example.productmanagementservice.entity.products.CreditCard;
-import com.example.productmanagementservice.entity.products.CreditCash;
+import com.example.productmanagementservice.dto.Reason;
+import com.example.productmanagementservice.dto.CreditCard;
+import com.example.productmanagementservice.dto.CreditCash;
 import com.example.productmanagementservice.services.ApplicationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

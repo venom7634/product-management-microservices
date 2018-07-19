@@ -36,7 +36,7 @@
             <column name="id" type="int" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="client_id" type="int">
+            <column name="clientId" type="int">
                 <constraints nullable="false"/>
             </column>
             <column name="status" type="int">
@@ -59,7 +59,7 @@
             </column>
         </createTable>
 
-        <addForeignKeyConstraint baseColumnNames="client_id"
+        <addForeignKeyConstraint baseColumnNames="clientId"
                                  baseTableName="applications"
                                  constraintName="fk_app_users"
                                  referencedColumnNames="id"
@@ -80,22 +80,3 @@
     </changeSet>
 
 </databaseChangeLog>
-
-
-
-
-        <!--jdbcTemplate.execute("CREATE TABLE applications(" +-->
-        <!--"id  INTEGER PRIMARY KEY AUTOINCREMENT," +-->
-        <!--"client_id INTEGER NOT NULL," +-->
-        <!--"statusApp INTEGER NOT NULL," +-->
-        <!--"product NCHAR(20)," +-->
-        <!--"limitOnCard INTEGER," +-->
-        <!--"amount INTEGER," +-->
-        <!--"timeInMonth INTEGER," +-->
-        <!--"description NCHAR(300)," +-->
-        <!--"FOREIGN KEY(client_id) REFERENCES users(id))");-->
-
-        <!--jdbcTemplate.execute("CREATE TABLE products(" +-->
-        <!--"id  INTEGER PRIMARY KEY AUTOINCREMENT," +-->
-        <!--"name NCHAR(30) NOT NULL," +-->
-        <!--"description NCHAR(255) NOT NULL)");-->
