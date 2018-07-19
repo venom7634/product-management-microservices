@@ -10,17 +10,18 @@ import java.util.stream.Collectors;
 @Component
 public class ProductsVerificator {
 
-    public boolean checkProductInApplicationsClient(String product, List<Application> applications) {
+    public void checkProductInApplicationsClient(String product, List<Application> applications) {
         List<Application> applicationsWithProduct =
                 applications
                         .stream()
-                        .filter(app -> app.getProduct().equals(product) && app.getStatus() == Application.statusApp.APPROVED.ordinal())
+                        .filter(app -> app.getProduct() != null)
+                        .filter(app -> app.getProduct().equals(product)
+                                && app.getStatus() == Application.statusApp.CREATED.getStatus())
                         .collect(Collectors.toList());
 
         if (applicationsWithProduct.isEmpty()) {
             throw new NoAccessException();
         }
-        return true;
     }
 
 }

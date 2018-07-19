@@ -1,8 +1,6 @@
 package com.example.datausersservice;
 
-
 import com.example.datausersservice.entity.User;
-import com.example.datausersservice.NoAccessException;
 import org.springframework.stereotype.Component;
 
 @Component

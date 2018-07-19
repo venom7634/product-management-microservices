@@ -6,18 +6,23 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 public class Product {
 
     public enum type {
-        DEBIT_CARD("debit-card"),
-        CREDIT_CARD("credit-card"),
-        CREDIT_CASH("credit-cash");
+        DEBIT_CARD("debit-card", 1),
+        CREDIT_CARD("credit-card", 2),
+        CREDIT_CASH("credit-cash", 3);
 
         private String name;
+        private int id;
 
-        type(String name){
+        type(String name, int id){
             this.name = name;
         }
 
         public String getName(){
             return this.name;
+        }
+
+        public int getId() {
+            return id;
         }
     }
 

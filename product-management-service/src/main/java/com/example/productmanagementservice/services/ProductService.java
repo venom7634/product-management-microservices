@@ -44,7 +44,7 @@ public class ProductService {
         userService.isExistsUser(user);
         userService.authenticationOfBankEmployee(user.getSecurity());
 
-        return productsRepository.getProductsForClient(Application.statusApp.APPROVED.ordinal(), userId);
+        return productsRepository.getProductsForClient(userId);
     }
 
     public Product getProductOfName(String checkingProduct) {
@@ -52,7 +52,7 @@ public class ProductService {
 
         for (Product.type product : Product.type.values()) {
             if (checkingProduct.equals(product.getName())) {
-                id = product.ordinal() + 1;
+                id = product.getId();
             }
         }
 
@@ -65,7 +65,7 @@ public class ProductService {
         userService.isExistsUser(user);
         userService.authenticationOfBankEmployee(user.getSecurity());
 
-        return calculatePercent(productsRepository.getApprovedStatistics(Application.statusApp.APPROVED.ordinal()));
+        return calculatePercent(productsRepository.getApprovedStatistics());
     }
 
     public List<Statistic> getStatisticsNegativeApplications(String token) {
@@ -74,7 +74,7 @@ public class ProductService {
         userService.isExistsUser(user);
         userService.authenticationOfBankEmployee(user.getSecurity());
 
-        return calculatePercent(productsRepository.getNegativeStatistics(Application.statusApp.NEGATIVE.ordinal()));
+        return calculatePercent(productsRepository.getNegativeStatistics());
     }
 
 

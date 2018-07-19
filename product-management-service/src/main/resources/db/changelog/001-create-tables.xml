@@ -36,7 +36,7 @@
             <column name="id" type="int" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="clientId" type="int">
+            <column name="client_id" type="int">
                 <constraints nullable="false"/>
             </column>
             <column name="status" type="int">
@@ -59,7 +59,7 @@
             </column>
         </createTable>
 
-        <addForeignKeyConstraint baseColumnNames="clientId"
+        <addForeignKeyConstraint baseColumnNames="client_id"
                                  baseTableName="applications"
                                  constraintName="fk_app_users"
                                  referencedColumnNames="id"

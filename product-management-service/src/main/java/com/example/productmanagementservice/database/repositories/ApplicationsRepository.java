@@ -12,20 +12,20 @@ public interface ApplicationsRepository {
 
     @Insert("INSERT INTO applications " +
             "(client_id, status, product, limit_on_card, amount, time_in_month, description) " +
-            "VALUES (#{id}, #{status}, null, null, null, null, null)")
-    void createNewApplicationInDatabase(@Param("id") long idUser, @Param("status") int status);
+            "VALUES (#{id}, 0, null, null, null, null, null)")
+    void createNewApplicationInDatabase(@Param("id") long idUser);
 
     @Select("select * from applications where id = #{id}")
     Application getApplicationById(@Param("id") long idApplication);
 
-    @Select("select * from applications where client_id = #{userId}")
-    List<Application> getAllClientApplications(@Param("userID") long userId);
+    @Select("select *, client_id as clientId from applications where client_id = #{userId}")
+    List<Application> getAllClientApplications(@Param("userId") long userId);
 
     @Select("select * from applications where client_id = #{userId} order by id desc limit 1")
     Application getNewApplication(@Param("userId") long userId);
 
-    @Update("UPDATE applications SET status = #{status} WHERE id = #{id}")
-    void sendApplicationToConfirmation(@Param("id") long idApplication, @Param("status") int status);
+    @Update("UPDATE applications SET status = #{status} WHERE id = 1")
+    void sendApplicationToConfirmation(@Param("id") long idApplication);
 
     @Select("select applications.id, client_id, status, product, limit_on_card as limit, amount, time_in_month " +
             "from applications " +

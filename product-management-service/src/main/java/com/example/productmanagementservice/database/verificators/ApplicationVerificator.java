@@ -13,21 +13,20 @@ import java.util.stream.Collectors;
 @Component
 public class ApplicationVerificator {
 
-    public boolean isExistsApplication(List<Application> applications, long idApplication) {
+    public void isExistsApplication(List<Application> applications, long idApplication) {
         List<Application> createdApplications =
                 applications
                         .stream()
-                        .filter(app -> app.getStatus() == Application.statusApp.CREATED.ordinal()
+                        .filter(app -> app.getStatus() == Application.statusApp.CREATED.getStatus()
                                 && app.getId() == idApplication)
                         .collect(Collectors.toList());
 
         if (createdApplications.isEmpty()) {
             throw new ApplicationNoExistsException();
         }
-        return true;
     }
 
-    public boolean verificationOfBelongingApplicationToClient(List<Application> applications, long userId, long idApplication) {
+    public void checkApplicationToClient(List<Application> applications, long userId, long idApplication) {
         List<Application> filteredApplications =
                 applications
                         .stream()
@@ -37,23 +36,21 @@ public class ApplicationVerificator {
         if (filteredApplications.isEmpty()) {
             throw new NotMatchUserException();
         }
-        return true;
     }
 
-    public boolean checkForChangeStatusApplication(List<Application> applications, long idApplication) {
+    public void checkForChangeStatusApplication(List<Application> applications, long idApplication) {
         List<Application> filteredApplications =
                 applications
                         .stream()
-                        .filter(app -> app.getStatus() == Application.statusApp.SENT.ordinal()
+                        .filter(app -> app.getStatus() == Application.statusApp.SENT.getStatus()
                                 && app.getId() == idApplication)
                         .collect(Collectors.toList());
         if (filteredApplications.isEmpty()) {
             throw new NoAccessException();
         }
-        return true;
     }
 
-    public boolean checkIsEmptyOfApplication(List<Application> applications, long idApplication) {
+    public void checkIsEmptyOfApplication(List<Application> applications, long idApplication) {
         List<Application> filteredApplications =
                 applications
                         .stream()
@@ -66,7 +63,5 @@ public class ApplicationVerificator {
         if (filteredApplications.get(0).getProduct() == null) {
             throw new IncorrectValueException();
         }
-
-        return true;
     }
 }

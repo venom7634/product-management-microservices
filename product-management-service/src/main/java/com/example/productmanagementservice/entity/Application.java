@@ -8,10 +8,20 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 public class Application {
 
     public enum statusApp {
-        CREATED,
-        SENT,
-        APPROVED,
-        NEGATIVE
+        CREATED(0),
+        SENT(1),
+        APPROVED(2),
+        NEGATIVE(3);
+
+        private int status;
+
+        statusApp(int status){
+            this.status = status;
+        }
+
+        public int getStatus() {
+            return status;
+        }
     }
 
     @JsonIgnore

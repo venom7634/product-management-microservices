@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 
 import javax.sql.DataSource;
 
-@MapperScan("com.example.datausersservice.repositories")
+@MapperScan("com.example.datausersservice")
 @Configuration
 public class Config {
 

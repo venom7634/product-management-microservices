@@ -30,7 +30,7 @@ public class LoginService {
     }
 
     private String createToken(String login) {
-        LocalDateTime localDateTime = LocalDateTime.now().plusMinutes(1);
+        LocalDateTime localDateTime = LocalDateTime.now().plusMinutes(30);
         Date date = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
 
         User user = usersRepository.getUserByLogin(login);
