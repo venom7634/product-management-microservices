@@ -3,10 +3,9 @@ package com.example.productmanagementservice.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Application {
-
-    int id;
 
     public enum statusApp {
         CREATED,
@@ -17,7 +16,10 @@ public class Application {
 
     @JsonIgnore
     private int client_id;
+    @JsonIgnore
     int status;
+
+    int id;
     private String product;
     private String limit;
     private String amount;

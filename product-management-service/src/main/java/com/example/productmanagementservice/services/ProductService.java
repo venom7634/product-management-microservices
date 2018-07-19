@@ -43,7 +43,7 @@ public class ProductService {
     }
 
     public List<Product> getProductsForClient(String token, long userId) {
-        List<User> users = usersRepository.getUsersByToken(token);
+        List<User> users = usersRepository.getUsersById(loginService.getIdByToken(token));
 
         userVerificator.isExistsUser(users);
         loginService.checkTokenOnValidation(token, users.get(0).getLogin());
@@ -65,7 +65,7 @@ public class ProductService {
     }
 
     public List<Statistic> getStatisticUsesProducts(String token) {
-        List<User> users = usersRepository.getUsersByToken(token);
+        List<User> users = usersRepository.getUsersById(loginService.getIdByToken(token));
 
         userVerificator.isExistsUser(users);
         loginService.checkTokenOnValidation(token, users.get(0).getLogin());
@@ -75,7 +75,7 @@ public class ProductService {
     }
 
     public List<Statistic> getStatisticsNegativeApplications(String token) {
-        List<User> users = usersRepository.getUsersByToken(token);
+        List<User> users = usersRepository.getUsersById(loginService.getIdByToken(token));
 
         userVerificator.isExistsUser(users);
         loginService.checkTokenOnValidation(token, users.get(0).getLogin());

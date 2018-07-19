@@ -19,8 +19,8 @@ public interface UsersRepository {
     @Select("SELECT * FROM users WHERE login = #{login}")
     List<User> getUsersByLogin(@Param("login") String login);
 
-    @Select("SELECT * FROM users WHERE token = #{token}")
-    List<User> getUsersByToken(@Param("token") String token);
+    @Select("SELECT * FROM users WHERE id = #{id}")
+    List<User> getUsersById(@Param("id") long id);
 
     @Select("select users.id, login, password, token, security, users.name, users.description " +
             "from users JOIN applications ON users.id = client_id where applications.id = #{id}")

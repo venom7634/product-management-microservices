@@ -33,12 +33,12 @@ public interface ProductsRepository {
     @Select("SELECT products.id, products.name FROM products " +
             "INNER JOIN applications ON applications.product = products.name " +
             "INNER JOIN users ON users.id = applications.id " +
-            "WHERE applications.statusApp = #{statusApp} AND users.id = #{id} ")
-    List<Product> getProductsForClient(@Param("statusApp") int status, @Param("id") long userId);
+            "WHERE applications.status = #{status} AND users.id = #{id} ")
+    List<Product> getProductsForClient(@Param("status") int status, @Param("id") long userId);
 
-    @Select("SELECT COUNT(id) as count, product FROM applications GROUP BY product, statusApp HAVING statusApp = #{statusApp}")
-    List<Statistic> getApprovedStatistics(@Param("statusApp") int status);
+    @Select("SELECT COUNT(id) as count, product FROM applications GROUP BY product, status HAVING status = #{status}")
+    List<Statistic> getApprovedStatistics(@Param("status") int status);
 
-    @Select("SELECT COUNT(id) as count, description as reason FROM applications GROUP BY description, statusApp HAVING statusApp = #{statusApp}")
-    List<Statistic> getNegativeStatistics(@Param("statusApp") int status);
+    @Select("SELECT COUNT(id) as count, description as reason FROM applications GROUP BY description, status HAVING status = #{status}")
+    List<Statistic> getNegativeStatistics(@Param("status") int status);
 }

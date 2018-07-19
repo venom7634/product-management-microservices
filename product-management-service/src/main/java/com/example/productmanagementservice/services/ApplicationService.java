@@ -41,21 +41,14 @@ public class ApplicationService {
         this.productService = productService;
     }
 
-    private boolean checkToken(List<User> users, String token) {
-        userVerificator.isExistsUser(users);
-        loginService.checkTokenOnValidation(token, users.get(0).getLogin());
-
-        return false;
-    }
-
     public Application createApplication(String token) {
-        List<User> users = usersRepository.getUsersByToken(token);
-        checkToken(users, token);
+        List<User> users = usersRepository.getUsersById(loginService.getIdByToken(token));
+        userVerificator.isExistsUser(users);
         return createNewApplication(token);
     }
 
     public void addDebitCardToApplication(String token, long idApplication) {
-        List<User> users = usersRepository.getUsersByToken(token);
+        List<User> users = usersRepository.getUsersById(loginService.getIdByToken(token));
         List<Application> applications = applicationsRepository.getAllClientApplications(users.get(0).getId());
 
         applicationVerificator.isExistsApplication(applications, idApplication);
@@ -65,7 +58,7 @@ public class ApplicationService {
     }
 
     public void addCreditCardToApplication(String token, long idApplication, int limit) {
-        List<User> users = usersRepository.getUsersByToken(token);
+        List<User> users = usersRepository.getUsersById(loginService.getIdByToken(token));
         List<Application> applications = applicationsRepository.getAllClientApplications(users.get(0).getId());
 
         applicationVerificator.isExistsApplication(applications, idApplication);
@@ -79,7 +72,7 @@ public class ApplicationService {
     }
 
     public void addCreditCashToApplication(String token, long idApplication, int amount, int timeInMonth) {
-        List<User> users = usersRepository.getUsersByToken(token);
+        List<User> users = usersRepository.getUsersById(loginService.getIdByToken(token));
         List<Application> applications = applicationsRepository.getAllClientApplications(users.get(0).getId());
 
         applicationVerificator.isExistsApplication(applications, idApplication);
@@ -93,24 +86,24 @@ public class ApplicationService {
     }
 
     private void checkForAddProduct(List<User> users, String token, long idApplication) {
-        checkToken(users, token);
+        userVerificator.isExistsUser(users);
         List<Application> applications = applicationsRepository.getAllClientApplications(users.get(0).getId());
         applicationVerificator.verificationOfBelongingApplicationToClient(applications, users.get(0).getId(), idApplication);
     }
 
     public List<Application> getApplicationsForApproval(String token) {
-        List<User> users = usersRepository.getUsersByToken(token);
-        checkToken(users, token);
+        List<User> users = usersRepository.getUsersById(loginService.getIdByToken(token));
+        userVerificator.isExistsUser(users);
         return applicationsRepository
                 .getListSentApplicationsOfDataBase(users.get(0).getId(), Application.statusApp.SENT.ordinal());
 
     }
 
     public void sendApplicationForApproval(String token, long idApplication) {
-        List<User> users = usersRepository.getUsersByToken(token);
+        List<User> users = usersRepository.getUsersById(loginService.getIdByToken(token));
         List<Application> applications = applicationsRepository.getAllClientApplications(users.get(0).getId());
 
-        checkToken(users, token);
+        userVerificator.isExistsUser(users);
         applicationVerificator.isExistsApplication(applications, idApplication);
         applicationVerificator.verificationOfBelongingApplicationToClient(applications, users.get(0).getId(), idApplication);
         applicationVerificator.checkIsEmptyOfApplication(applications, idApplication);
@@ -122,9 +115,9 @@ public class ApplicationService {
     }
 
     public List<Application> getApplicationsClientForApproval(long userId, String token) {
-        List<User> users = usersRepository.getUsersByToken(token);
+        List<User> users = usersRepository.getUsersById(loginService.getIdByToken(token));
 
-        checkToken(users, token);
+        userVerificator.isExistsUser(users);
         userVerificator.authenticationOfBankEmployee(users.get(0).getSecurity());
 
         return applicationsRepository.getListSentApplicationsOfDataBase(userId, Application.statusApp.SENT.ordinal());
@@ -132,11 +125,11 @@ public class ApplicationService {
     }
 
     public void approveApplication(long idApplication, String token) {
-        List<User> users = usersRepository.getUsersByToken(token);
+        List<User> users = usersRepository.getUsersById(loginService.getIdByToken(token));
         List<Application> applications = applicationsRepository
                 .getAllClientApplications(usersRepository.getUsersByIdApplication(idApplication).get(0).getId());
 
-        checkToken(users, token);
+        userVerificator.isExistsUser(users);
         applicationVerificator.isExistsApplication(applications, idApplication);
         applicationVerificator.checkForChangeStatusApplication(applications, idApplication);
         productsVerificator.checkProductInApplicationsClient
@@ -152,11 +145,11 @@ public class ApplicationService {
     }
 
     public void negativeApplication(long idApplication, String token, String reason) {
-        List<User> users = usersRepository.getUsersByToken(token);
+        List<User> users = usersRepository.getUsersById(loginService.getIdByToken(token));
         List<Application> applications = applicationsRepository
                 .getAllClientApplications(usersRepository.getUsersByIdApplication(idApplication).get(0).getId());
 
-        checkToken(users, token);
+        userVerificator.isExistsUser(users);
         applicationVerificator.isExistsApplication(applications, idApplication);
         applicationVerificator.checkForChangeStatusApplication(applications, idApplication);
         userVerificator.authenticationOfBankEmployee(users.get(0).getSecurity());
@@ -165,7 +158,7 @@ public class ApplicationService {
 
     }
 
-    public Application createNewApplication(String token) {
+    private Application createNewApplication(String token) {
         applicationsRepository.createNewApplicationInDatabase(loginService.getIdByToken(token),
                 Application.statusApp.CREATED.ordinal());
         List<Application> applications = applicationsRepository.getNewApplication(loginService.getIdByToken(token));
@@ -173,7 +166,7 @@ public class ApplicationService {
         return applications.get(0);
     }
 
-    public boolean checkTotalAmountMoneyHasReachedMax(long idApplication) {
+    private boolean checkTotalAmountMoneyHasReachedMax(long idApplication) {
         int totalAmount = 0;
 
         List<Application> applications = applicationsRepository.getListApprovedApplicationsOfDatabase

@@ -5,9 +5,7 @@ import com.example.productmanagementservice.database.verificators.UserVerificato
 import com.example.productmanagementservice.entity.User;
 import com.example.productmanagementservice.entity.data.Token;
 import com.example.productmanagementservice.exceptions.NoAccessException;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,7 +34,7 @@ public class LoginService {
     }
 
     private String createToken(String login) {
-        LocalDateTime localDateTime = LocalDateTime.now().plusMinutes(30);
+        LocalDateTime localDateTime = LocalDateTime.now().plusMinutes(1);
         Date date = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
 
         User user = usersRepository.getUsersByLogin(login).get(0);
@@ -54,8 +52,10 @@ public class LoginService {
     }
 
     public long getIdByToken(String token) {
-        String key = usersRepository.getUsersByToken(token).get(0).getLogin();
-        return Long.parseLong(Jwts.parser().setSigningKey(key).parseClaimsJws(token).getBody().getSubject());
+        int i = token.lastIndexOf('.');
+        String tokenWithoutKey = token.substring(0,i+1);
+
+        return Long.parseLong(Jwts.parser().parseClaimsJwt(tokenWithoutKey).getBody().getSubject());
     }
 
     public boolean checkTokenOnValidation(String token, String login) {
