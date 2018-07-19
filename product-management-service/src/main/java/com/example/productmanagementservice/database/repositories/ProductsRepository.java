@@ -28,7 +28,7 @@ public interface ProductsRepository {
     @Update("UPDATE applications SET product = 'credit-cash',limit_on_card = null,  amount = #{amount}," +
             "time_in_month = #{timeInMonth} WHERE id = #{id}")
     void addCreditCashToApplication(@Param("id") long idApplication, @Param("amount") int amount,
-                                           @Param("timeInMonth") int timeInMonth);
+                                    @Param("timeInMonth") int timeInMonth);
 
     @Select("SELECT products.id, products.name FROM products " +
             "INNER JOIN applications ON applications.product = products.name " +

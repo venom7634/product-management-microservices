@@ -30,7 +30,7 @@ public class UserVerificator {
     }
 
     public boolean isExistsUser(List<User> users) {
-        if(users.isEmpty()){
+        if (users.isEmpty()) {
             throw new NoAccessException();
         }
         return true;

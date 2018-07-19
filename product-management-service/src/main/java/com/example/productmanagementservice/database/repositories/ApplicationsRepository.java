@@ -18,9 +18,6 @@ public interface ApplicationsRepository {
     @Select("select * from applications where id = #{id}")
     List<Application> getApplicationsById(@Param("id") long idApplication);
 
-    @Select("select * from applications where id = #{idApplication} and statusApp = #{statusApp}")
-    List<Application> getApplicationsByIdAndStatus(@Param("idApplication") long idApplication, @Param("statusApp") int status);
-
     @Select("select * from applications where client_id = #{userId}")
     List<Application> getAllClientApplications(@Param("userID") long userId);
 
@@ -37,7 +34,7 @@ public interface ApplicationsRepository {
     List<Application> getListSentApplicationsOfDataBase(@Param("userId") long userId, @Param("statusApp") int status);
 
     @Select("select * from applications where client_id = #{userId} and statusApp = #{statusApp}")
-    List<Application> getListApprovedApplicationsOfDatabase(@Param("userId") long userId, @Param("statusApp") int status); // params Application.statusApp.APPROVED.ordinal(
+    List<Application> getListApprovedApplicationsOfDatabase(@Param("userId") long userId, @Param("statusApp") int status);
 
     @Update("UPDATE applications SET statusApp = #{statusApp}, description = 'Approved' WHERE id = #{idApplication}")
     void approveApplication(@Param("idApplication") long idApplication, @Param("statusApp") int status);

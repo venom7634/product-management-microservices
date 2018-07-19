@@ -99,9 +99,9 @@ public class ProductService {
         return statistics;
     }
 
-    public String getProductApplication(List<Application> applications, long idApplication){
-        for(Application application : applications){
-            if(application.getId() == idApplication){
+    public String getProductApplication(List<Application> applications, long idApplication) {
+        for (Application application : applications) {
+            if (application.getId() == idApplication) {
                 return application.getProduct();
             }
         }

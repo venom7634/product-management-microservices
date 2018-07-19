@@ -83,7 +83,7 @@ public class Application {
     public void setTimeInMonth(String timeInMonth) {
         this.timeInMonth = timeInMonth;
     }
-   
+
     public int getStatus() {
         return status;
     }

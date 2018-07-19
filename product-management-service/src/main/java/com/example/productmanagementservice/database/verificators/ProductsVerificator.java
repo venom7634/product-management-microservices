@@ -17,7 +17,7 @@ public class ProductsVerificator {
                         .filter(app -> app.getProduct().equals(product) && app.getStatus() == Application.statusApp.APPROVED.ordinal())
                         .collect(Collectors.toList());
 
-        if(applicationsWithProduct.isEmpty()){
+        if (applicationsWithProduct.isEmpty()) {
             throw new NoAccessException();
         }
         return true;
