@@ -13,10 +13,6 @@ public interface UsersRepository {
     @Select("SELECT * FROM users WHERE id = #{id}")
     User getUserById(@Param("id") long id);
 
-    @Select("select users.id, login, password, security, users.name, users.description " +
-            "from users JOIN applications ON users.id = client_id where applications.id = #{id}")
-    User getUserByIdApplication(@Param("id") long idApplication);
-
     @Select("SELECT * FROM users WHERE login = #{login}")
     User getUserByLogin(@Param("login") String login);
 }

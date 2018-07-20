@@ -16,6 +16,4 @@ public interface UsersServiceClient {
     @RequestMapping(value = "/users/getIdByToken", method = RequestMethod.POST)
     long getIdByToken(@RequestBody String token);
 
-    @RequestMapping(value = "/users/userApplications/{id}", method = RequestMethod.GET)
-    User getUserByIdApplication(@PathVariable("id") long id);
 }

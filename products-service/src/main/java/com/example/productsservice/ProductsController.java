@@ -33,10 +33,6 @@ public class ProductsController {
         return productService.getDescriptionCreditCash();
     }
 
-    @RequestMapping(value = "/clients/{id}/products", method = RequestMethod.GET)
-    public List<Product> getClientProducts(@PathVariable("id") long userId, @RequestHeader("token") String token) {
-        return productService.getProductsForClient(token, userId);
-    }
 
     @RequestMapping(value = "/products/statistics/approvedApplications", method = RequestMethod.GET)
     public List<Statistic> getStatisticsApprovedApplications(@RequestHeader("token") String token) {

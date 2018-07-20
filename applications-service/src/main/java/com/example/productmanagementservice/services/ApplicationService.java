@@ -115,7 +115,8 @@ public class ApplicationService {
     public void approveApplication(long idApplication, String token) {
         User user = usersServiceClient.getUserById(usersServiceClient.getIdByToken(token));
         List<Application> applications = applicationsRepository
-                .getAllClientApplications(usersServiceClient.getUserByIdApplication(idApplication).getId());
+                .getAllClientApplications(usersServiceClient.getUserById
+                        (applicationsRepository.getIdUserByApplications(idApplication)).getId());
 
         applicationVerificator.isExistsUser(user);
         applicationVerificator.isExistsApplication(applications, idApplication);
@@ -134,7 +135,8 @@ public class ApplicationService {
     public void negativeApplication(long idApplication, String token, String reason) {
         User user = usersServiceClient.getUserById(usersServiceClient.getIdByToken(token));
         List<Application> applications = applicationsRepository
-                .getAllClientApplications(usersServiceClient.getUserByIdApplication(idApplication).getId());
+                .getAllClientApplications(usersServiceClient.getUserById
+                        (applicationsRepository.getIdUserByApplications(idApplication)).getId());
 
         applicationVerificator.isExistsUser(user);
         applicationVerificator.isExistsApplication(applications, idApplication);
@@ -161,12 +163,12 @@ public class ApplicationService {
         }
 
         if (application.getLimit() != null) {
-            if ((Integer.parseInt(application.getLimit()) + totalAmount) <= 1000) {
+            if ((Integer.parseInt(application.getLimit()) + totalAmount) >= 1000) {
                 throw new MaxAmountCreditReachedException();
             }
         }
         if (application.getAmount() != null) {
-            if ((Integer.parseInt(application.getAmount()) + totalAmount) <= 1000) {
+            if ((Integer.parseInt(application.getAmount()) + totalAmount) >= 1000) {
                 throw new MaxAmountCreditReachedException();
             }
         }

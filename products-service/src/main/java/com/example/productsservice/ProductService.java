@@ -1,5 +1,6 @@
 package com.example.productsservice;
 
+import com.example.productsservice.clients.ApplicationsServiceClient;
 import com.example.productsservice.clients.UsersServiceClient;
 import com.example.productsservice.dto.Statistic;
 import com.example.productsservice.entity.Product;
@@ -16,11 +17,13 @@ public class ProductService {
 
     private final ProductsRepository productsRepository;
     private final UsersServiceClient usersServiceClient;
-
+    private final ApplicationsServiceClient applicationsServiceClient;
     @Autowired
-    public ProductService(UsersServiceClient usersServiceClient, ProductsRepository productsRepository) {
+    public ProductService(ApplicationsServiceClient applicationsServiceClient, UsersServiceClient usersServiceClient,
+                          ProductsRepository productsRepository) {
         this.usersServiceClient = usersServiceClient;
         this.productsRepository = productsRepository;
+        this.applicationsServiceClient = applicationsServiceClient;
     }
 
     public Product getDescriptionDebitCard() {
@@ -62,7 +65,7 @@ public class ProductService {
         isExistsUser(user);
         authenticationOfBankEmployee(user.getSecurity());
 
-        return calculatePercent(productsRepository.getApprovedStatistics());
+        return calculatePercent(applicationsServiceClient.getApprovedStatistics());
     }
 
     public List<Statistic> getStatisticsNegativeApplications(String token) {
@@ -71,7 +74,7 @@ public class ProductService {
         isExistsUser(user);
         authenticationOfBankEmployee(user.getSecurity());
 
-        return calculatePercent(productsRepository.getNegativeStatistics());
+        return calculatePercent(applicationsServiceClient.getNegativeStatistics());
     }
 
 

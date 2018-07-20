@@ -20,11 +20,6 @@ public class UsersController {
         return usersRepository.getUserById(id);
     }
 
-    @RequestMapping(value = "/users/userApplications/{id}", method = RequestMethod.GET)
-    public User getUserByIdApplication(@PathVariable("id") long id) {
-        return usersRepository.getUserByIdApplication(id);
-    }
-
     @RequestMapping(value = "/users/getIdByToken", method = RequestMethod.POST)
     public long getIdByToken(@RequestBody String token) {
         return userService.getIdByToken(token);

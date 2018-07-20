@@ -21,10 +21,6 @@ zuul:
       path: /products/**
       url: http://localhost:3000/products/
       serviceId: products-service
-    clients-service:
-      path: /clients/**
-      url: http://localhost:3000/clients/
-      serviceId: products-service
     users-service:
       path: /users/**
       url: http://localhost:4000/users/

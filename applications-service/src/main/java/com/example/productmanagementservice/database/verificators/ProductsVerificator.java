@@ -16,7 +16,7 @@ public class ProductsVerificator {
                         .stream()
                         .filter(app -> app.getProduct() != null)
                         .filter(app -> app.getProduct().equals(product)
-                                && app.getStatus() == Application.statusApp.CREATED.getStatus())
+                                && app.getStatus() == Application.statusApp.SENT.getStatus())
                         .collect(Collectors.toList());
 
         if (applicationsWithProduct.isEmpty()) {

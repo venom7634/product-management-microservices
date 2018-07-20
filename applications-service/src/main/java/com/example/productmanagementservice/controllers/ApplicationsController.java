@@ -1,5 +1,7 @@
 package com.example.productmanagementservice.controllers;
 
+import com.example.productmanagementservice.database.repositories.ApplicationsRepository;
+import com.example.productmanagementservice.dto.Statistic;
 import com.example.productmanagementservice.entity.Application;
 import com.example.productmanagementservice.dto.Reason;
 import com.example.productmanagementservice.dto.CreditCard;
@@ -14,10 +16,12 @@ import java.util.List;
 public class ApplicationsController {
 
     private final ApplicationService applicationService;
+    private final ApplicationsRepository applicationsRepository;
 
     @Autowired
-    public ApplicationsController(ApplicationService applicationService) {
+    public ApplicationsController(ApplicationsRepository applicationsRepository, ApplicationService applicationService) {
         this.applicationService = applicationService;
+        this.applicationsRepository = applicationsRepository;
     }
 
     @RequestMapping(value = "/applications", method = RequestMethod.POST)
@@ -69,6 +73,16 @@ public class ApplicationsController {
     public void negativeApplication(@PathVariable("id") long idApplication, @RequestHeader("token") String token,
                                     @RequestBody Reason reason) {
         applicationService.negativeApplication(idApplication, token, reason.getReason());
+    }
+
+    @RequestMapping(value = "/applications/getApprovedStatistics", method = RequestMethod.GET)
+    List<Statistic> getApprovedStatistics(){
+        return applicationsRepository.getApprovedStatistics();
+    }
+
+    @RequestMapping(value = "/applications/getNegativeStatistics", method = RequestMethod.GET)
+    List<Statistic> getNegativeStatistics(){
+        return applicationsRepository.getNegativeStatistics();
     }
 
 }

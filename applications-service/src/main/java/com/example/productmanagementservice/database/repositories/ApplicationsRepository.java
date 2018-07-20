@@ -1,5 +1,6 @@
 package com.example.productmanagementservice.database.repositories;
 
+import com.example.productmanagementservice.dto.Statistic;
 import com.example.productmanagementservice.entity.Application;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
@@ -29,7 +30,6 @@ public interface ApplicationsRepository {
 
     @Select("select applications.id, client_id, status, product, limit_on_card as limit, amount, time_in_month " +
             "from applications " +
-            "INNER JOIN users ON client_id = users.id " +
             "where client_id = #{userId} AND status = 1")
     List<Application> getListSentApplicationsOfDataBase(@Param("userId") long userId);
 
@@ -58,4 +58,13 @@ public interface ApplicationsRepository {
             "time_in_month = #{timeInMonth} WHERE id = #{id}")
     void addCreditCashToApplication(@Param("id") long idApplication, @Param("amount") int amount,
                                     @Param("timeInMonth") int timeInMonth);
+
+    @Select("SELECT client_id FROM applications WHERE id = #{id}")
+    long getIdUserByApplications(@Param("id") long id);
+
+    @Select("SELECT COUNT(id) as count, product FROM applications GROUP BY product, status HAVING status = 2")
+    List<Statistic> getApprovedStatistics();
+
+    @Select("SELECT COUNT(id) as count, description as reason FROM applications GROUP BY description, status HAVING status = 3")
+    List<Statistic> getNegativeStatistics();
 }
