@@ -24,7 +24,7 @@ public interface ApplicationsRepository {
     @Select("select * from applications where client_id = #{userId} order by id desc limit 1")
     Application getNewApplication(@Param("userId") long userId);
 
-    @Update("UPDATE applications SET status = #{status} WHERE id = 1")
+    @Update("UPDATE applications SET status = 1 WHERE id = #{id}")
     void sendApplicationToConfirmation(@Param("id") long idApplication);
 
     @Select("select applications.id, client_id, status, product, limit_on_card as limit, amount, time_in_month " +

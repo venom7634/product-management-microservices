@@ -18,7 +18,7 @@ public class ApplicationVerificator {
         List<Application> createdApplications =
                 applications
                         .stream()
-                        .filter(app -> app.getStatus() == Application.statusApp.CREATED.getStatus()
+                        .filter(app -> app.getStatus() == Application.statusApp.SENT.getStatus()
                                 && app.getId() == idApplication)
                         .collect(Collectors.toList());
 
