@@ -1,10 +1,11 @@
 package com.example.productsservice;
 
+import com.example.productsservice.clients.UsersServiceClient;
 import com.example.productsservice.dto.Statistic;
 import com.example.productsservice.entity.Product;
 import com.example.productsservice.entity.User;
+import com.example.productsservice.exceptions.NoAccessException;
 import com.example.productsservice.repositories.ProductsRepository;
-import com.example.productsservice.repositories.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,14 +15,12 @@ import java.util.List;
 public class ProductService {
 
     private final ProductsRepository productsRepository;
-    private final UserService userService;
-    private final UsersRepository usersRepository;
+    private final UsersServiceClient usersServiceClient;
 
     @Autowired
-    public ProductService(UserService userService, ProductsRepository productsRepository, UsersRepository usersRepository) {
-        this.userService = userService;
+    public ProductService(UsersServiceClient usersServiceClient, ProductsRepository productsRepository) {
+        this.usersServiceClient = usersServiceClient;
         this.productsRepository = productsRepository;
-        this.usersRepository = usersRepository;
     }
 
     public Product getDescriptionDebitCard() {
@@ -37,10 +36,10 @@ public class ProductService {
     }
 
     public List<Product> getProductsForClient(String token, long userId) {
-        User user = usersRepository.getUserById(userService.getIdByToken(token));
+        User user = usersServiceClient.getUserById(usersServiceClient.getIdByToken(token));
 
-        userService.isExistsUser(user);
-        userService.authenticationOfBankEmployee(user.getSecurity());
+        isExistsUser(user);
+        authenticationOfBankEmployee(user.getSecurity());
 
         return productsRepository.getProductsForClient(userId);
     }
@@ -58,19 +57,19 @@ public class ProductService {
     }
 
     public List<Statistic> getStatisticUsesProducts(String token) {
-        User user = usersRepository.getUserById(userService.getIdByToken(token));
+        User user = usersServiceClient.getUserById(usersServiceClient.getIdByToken(token));
 
-        userService.isExistsUser(user);
-        userService.authenticationOfBankEmployee(user.getSecurity());
+        isExistsUser(user);
+        authenticationOfBankEmployee(user.getSecurity());
 
         return calculatePercent(productsRepository.getApprovedStatistics());
     }
 
     public List<Statistic> getStatisticsNegativeApplications(String token) {
-        User user = usersRepository.getUserById(userService.getIdByToken(token));
+        User user = usersServiceClient.getUserById(usersServiceClient.getIdByToken(token));
 
-        userService.isExistsUser(user);
-        userService.authenticationOfBankEmployee(user.getSecurity());
+        isExistsUser(user);
+        authenticationOfBankEmployee(user.getSecurity());
 
         return calculatePercent(productsRepository.getNegativeStatistics());
     }
@@ -88,5 +87,14 @@ public class ProductService {
         }
 
         return statistics;
+    }
+
+    public void isExistsUser(User user) {
+        if (user == null) {
+            throw new NoAccessException();
+        }
+    }
+    public boolean authenticationOfBankEmployee(int securityStatus) {
+        return securityStatus == User.access.EMPLOYEE_BANK.ordinal();
     }
 }

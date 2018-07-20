@@ -1,0 +1,13 @@
+spring:
+  application:
+     name: users-service
+
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8080/eureka/
+
+server:
+  port: 4000

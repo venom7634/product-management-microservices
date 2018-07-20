@@ -1,6 +1,5 @@
-package com.example.productsservice.repositories;
+package com.example.usersservice;
 
-import com.example.productsservice.entity.User;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -17,4 +16,7 @@ public interface UsersRepository {
     @Select("select users.id, login, password, security, users.name, users.description " +
             "from users JOIN applications ON users.id = client_id where applications.id = #{id}")
     User getUserByIdApplication(@Param("id") long idApplication);
+
+    @Select("SELECT * FROM users WHERE login = #{login}")
+    User getUserByLogin(@Param("login") String login);
 }

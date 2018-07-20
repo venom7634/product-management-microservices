@@ -1,6 +1,7 @@
 package com.example.productmanagementservice.database.verificators;
 
 import com.example.productmanagementservice.entity.Application;
+import com.example.productmanagementservice.entity.User;
 import com.example.productmanagementservice.exceptions.ApplicationNoExistsException;
 import com.example.productmanagementservice.exceptions.IncorrectValueException;
 import com.example.productmanagementservice.exceptions.NoAccessException;
@@ -64,4 +65,14 @@ public class ApplicationVerificator {
             throw new IncorrectValueException();
         }
     }
+    public void isExistsUser(User user) {
+        if (user == null) {
+            throw new NoAccessException();
+        }
+    }
+
+    public boolean authenticationOfBankEmployee(int securityStatus) {
+        return securityStatus == User.access.EMPLOYEE_BANK.ordinal();
+    }
+
 }

@@ -13,18 +13,17 @@ import java.time.ZoneId;
 @Service
 public class LoginService {
 
-    private final UsersRepository usersRepository;
-    private final UserVerificator userVerificator;
+    private final UsersServiceClient usersServiceClient;
 
     @Autowired
-    public LoginService(UserVerificator userVerificator, UsersRepository usersRepository) {
-        this.userVerificator = userVerificator;
-        this.usersRepository = usersRepository;
+    public LoginService(UsersServiceClient usersServiceClient) {
+        this.usersServiceClient = usersServiceClient;
+
     }
 
     public Token login(String login, String password) {
-        User user = usersRepository.getUserByLogin(login);
-        userVerificator.checkingUser(user, password);
+        User user = usersServiceClient.getUserByLogin(login);
+        checkingUser(user, password);
 
         return new Token(createToken(login));
     }
@@ -33,7 +32,7 @@ public class LoginService {
         LocalDateTime localDateTime = LocalDateTime.now().plusMinutes(30);
         Date date = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
 
-        User user = usersRepository.getUserByLogin(login);
+        User user = usersServiceClient.getUserByLogin(login);
 
         String token = Jwts.builder()
                 .setSubject("" + user.getId())
@@ -43,5 +42,12 @@ public class LoginService {
                 .compact();
 
         return token;
+    }
+
+    public boolean checkingUser(User user, String password) {
+        if (!(user == null) && user.getPassword().equals(password)) {
+            return true;
+        }
+        throw new NoAccessException();
     }
 }

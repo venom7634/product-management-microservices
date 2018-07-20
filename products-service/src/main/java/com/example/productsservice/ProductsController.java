@@ -20,7 +20,6 @@ public class ProductsController {
 
     @RequestMapping(value = "/products/debit-card", method = RequestMethod.GET)
     public Product getDescriptionDebitCard() {
-
         return productService.getDescriptionDebitCard();
     }
 
