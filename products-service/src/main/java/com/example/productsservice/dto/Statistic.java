@@ -10,8 +10,7 @@ public class Statistic {
     String product;
     double percent;
 
-    @JsonIgnore
-    int count;
+    Integer count;
 
     public Statistic() {
 
@@ -41,11 +40,11 @@ public class Statistic {
         this.percent = percent;
     }
 
-    public int getCount() {
+    public Integer getCount() {
         return count;
     }
 
-    public void setCount(int count) {
+    public void setCount(Integer count) {
         this.count = count;
     }
 }

@@ -9,8 +9,6 @@ public class Statistic {
     String reason;
     String product;
     double percent;
-
-    @JsonIgnore
     int count;
 
     public Statistic() {

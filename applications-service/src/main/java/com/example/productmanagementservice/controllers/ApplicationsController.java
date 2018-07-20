@@ -64,6 +64,14 @@ public class ApplicationsController {
         return applicationService.getApplicationsForApproval(token);
     }
 
+    @RequestMapping(value = "/applications/getApprovedStatistics", method = RequestMethod.GET)
+    public List<Statistic> getApprovedStatistics(){
+        return applicationsRepository.getApprovedStatistics();
+    }
+
+    @RequestMapping(value = "/applications/getNegativeStatistics", method = RequestMethod.GET)
+    public List<Statistic> getNegativeStatistics(){ return applicationsRepository.getNegativeStatistics();    }
+
     @RequestMapping(value = "/applications/{id}/approve", method = RequestMethod.POST)
     public void approveApplication(@PathVariable("id") long idApplication, @RequestHeader("token") String token) {
         applicationService.approveApplication(idApplication, token);
@@ -75,14 +83,5 @@ public class ApplicationsController {
         applicationService.negativeApplication(idApplication, token, reason.getReason());
     }
 
-    @RequestMapping(value = "/applications/getApprovedStatistics", method = RequestMethod.GET)
-    List<Statistic> getApprovedStatistics(){
-        return applicationsRepository.getApprovedStatistics();
-    }
-
-    @RequestMapping(value = "/applications/getNegativeStatistics", method = RequestMethod.GET)
-    List<Statistic> getNegativeStatistics(){
-        return applicationsRepository.getNegativeStatistics();
-    }
 
 }

@@ -38,15 +38,6 @@ public class ProductService {
         return getProductOfName("credit-cash");
     }
 
-    public List<Product> getProductsForClient(String token, long userId) {
-        User user = usersServiceClient.getUserById(usersServiceClient.getIdByToken(token));
-
-        isExistsUser(user);
-        authenticationOfBankEmployee(user.getSecurity());
-
-        return productsRepository.getProductsForClient(userId);
-    }
-
     public Product getProductOfName(String checkingProduct) {
         int id = 0;
 
@@ -87,6 +78,7 @@ public class ProductService {
 
         for (Statistic statistic : statistics) {
             statistic.setPercent(Math.round(statistic.getCount() / count * 10000) / 100.0);
+            statistic.setCount(null);
         }
 
         return statistics;
