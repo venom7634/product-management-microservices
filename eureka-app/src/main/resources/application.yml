@@ -5,4 +5,23 @@ eureka:
     registerWithEureka: false
     fetchRegistry: false
 server:
-  port: 1111
+  port: 8080
+
+zuul:
+  routes:
+    login-service:
+      path: /login
+      url: http://localhost:1000/
+      serviceId: login-service
+    applications-service:
+      path: /applications/**
+      url: http://localhost:2000/applications/
+      serviceId: applications-service
+    products-service:
+      path: /products/**
+      url: http://localhost:3000/products/
+      serviceId: products-service
+    clients-service:
+      path: /clients/**
+      url: http://localhost:3000/clients/
+      serviceId: products-service

@@ -1,6 +1,6 @@
 spring:
   application:
-     name: applications-service
+     name: products-service
 
 eureka:
   instance:
@@ -10,4 +10,4 @@ eureka:
       defaultZone: http://localhost:8080/eureka/
 
 server:
-  port: 2000
+  port: 3000

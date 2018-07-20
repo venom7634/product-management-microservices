@@ -1,4 +1,4 @@
-package com.example.productmanagementservice.entity;
+package com.example.productsservice.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;

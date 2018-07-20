@@ -1,8 +1,7 @@
-package com.example.productmanagementservice.controllers;
+package com.example.productsservice;
 
-import com.example.productmanagementservice.entity.Product;
-import com.example.productmanagementservice.dto.Statistic;
-import com.example.productmanagementservice.services.ProductService;
+import com.example.productsservice.dto.Statistic;
+import com.example.productsservice.entity.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +20,7 @@ public class ProductsController {
 
     @RequestMapping(value = "/products/debit-card", method = RequestMethod.GET)
     public Product getDescriptionDebitCard() {
+
         return productService.getDescriptionDebitCard();
     }
 

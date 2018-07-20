@@ -1,7 +1,6 @@
 package com.example.productmanagementservice.services;
 
 import com.example.productmanagementservice.database.repositories.ApplicationsRepository;
-import com.example.productmanagementservice.database.repositories.ProductsRepository;
 import com.example.productmanagementservice.database.repositories.UsersRepository;
 import com.example.productmanagementservice.database.verificators.ApplicationVerificator;
 import com.example.productmanagementservice.database.verificators.ProductsVerificator;
@@ -20,22 +19,17 @@ public class ApplicationService {
     private final ProductsVerificator productsVerificator;
     private final UserService userService;
     private final ApplicationsRepository applicationsRepository;
-    private final ProductsRepository productsRepository;
-    private final ProductService productService;
     private final UsersRepository usersRepository;
 
     @Autowired
     public ApplicationService(UserService userService, ApplicationsRepository applicationsRepository,
-                              ProductsRepository productsRepository, ApplicationVerificator applicationVerificator,
-                              ProductsVerificator productsVerificator, ProductService productService,
+                              ApplicationVerificator applicationVerificator, ProductsVerificator productsVerificator,
                               UsersRepository usersRepository) {
         this.usersRepository = usersRepository;
         this.userService = userService;
         this.applicationsRepository = applicationsRepository;
-        this.productsRepository = productsRepository;
         this.applicationVerificator = applicationVerificator;
         this.productsVerificator = productsVerificator;
-        this.productService = productService;
     }
 
     public Application createApplication(String token) {
@@ -52,7 +46,7 @@ public class ApplicationService {
         applicationVerificator.isExistsApplication(applications, idApplication);
         checkForAddProduct(user, idApplication);
 
-        productsRepository.addDebitCardToApplication(idApplication);
+        applicationsRepository.addDebitCardToApplication(idApplication);
     }
 
     public void addCreditCardToApplication(String token, long idApplication, int limit) {
@@ -63,7 +57,7 @@ public class ApplicationService {
         checkForAddProduct(user, idApplication);
 
         if (limit > 0 || limit <= 1000) {
-            productsRepository.addCreditCardToApplication(idApplication, limit);
+            applicationsRepository.addCreditCardToApplication(idApplication, limit);
         } else {
             throw new IncorrectValueException();
         }
@@ -77,7 +71,7 @@ public class ApplicationService {
         checkForAddProduct(user, idApplication);
 
         if ((amount > 0 || amount <= 1000) || timeInMonth > 0) {
-            productsRepository.addCreditCashToApplication(idApplication, amount, timeInMonth);
+            applicationsRepository.addCreditCashToApplication(idApplication, amount, timeInMonth);
         } else {
             throw new IncorrectValueException();
         }
@@ -104,7 +98,7 @@ public class ApplicationService {
         applicationVerificator.checkApplicationToClient(applications, user.getId(), idApplication);
         applicationVerificator.checkIsEmptyOfApplication(applications, idApplication);
         productsVerificator.checkProductInApplicationsClient
-                (productService.getProductApplication(applications, idApplication), applications);
+                (getProductApplication(applications, idApplication), applications);
         checkTotalAmountMoneyHasReachedMax(idApplication);
 
         applicationsRepository.sendApplicationToConfirmation(idApplication);
@@ -128,7 +122,7 @@ public class ApplicationService {
         applicationVerificator.isExistsApplication(applications, idApplication);
         applicationVerificator.checkForChangeStatusApplication(applications, idApplication);
         productsVerificator.checkProductInApplicationsClient
-                (productService.getProductApplication(applications, idApplication), applications);
+                (getProductApplication(applications, idApplication), applications);
         userService.authenticationOfBankEmployee(user.getSecurity());
         checkTotalAmountMoneyHasReachedMax(idApplication);
 
@@ -177,5 +171,14 @@ public class ApplicationService {
                 throw new MaxAmountCreditReachedException();
             }
         }
+    }
+
+    private String getProductApplication(List<Application> applications, long idApplication) {
+        for (Application application : applications) {
+            if (application.getId() == idApplication) {
+                return application.getProduct();
+            }
+        }
+        throw new PageNotFoundException();
     }
 }

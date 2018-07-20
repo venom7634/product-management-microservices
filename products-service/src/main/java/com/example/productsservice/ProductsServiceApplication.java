@@ -1,15 +1,14 @@
-package com.example.datausersservice;
+package com.example.productsservice;
 
-import com.netflix.discovery.DiscoveryClient;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 
 @SpringBootApplication
 @EnableEurekaClient
-public class DataUsersServiceApplication {
+public class ProductsServiceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(DataUsersServiceApplication.class, args);
+        SpringApplication.run(ProductsServiceApplication.class, args);
     }
 }

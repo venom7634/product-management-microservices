@@ -1,12 +1,10 @@
-package com.example.productmanagementservice.services;
+package com.example.productsservice;
 
-import com.example.productmanagementservice.database.repositories.ProductsRepository;
-import com.example.productmanagementservice.database.repositories.UsersRepository;
-import com.example.productmanagementservice.entity.Application;
-import com.example.productmanagementservice.entity.User;
-import com.example.productmanagementservice.entity.Product;
-import com.example.productmanagementservice.dto.Statistic;
-import com.example.productmanagementservice.exceptions.PageNotFoundException;
+import com.example.productsservice.dto.Statistic;
+import com.example.productsservice.entity.Product;
+import com.example.productsservice.entity.User;
+import com.example.productsservice.repositories.ProductsRepository;
+import com.example.productsservice.repositories.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -90,14 +88,5 @@ public class ProductService {
         }
 
         return statistics;
-    }
-
-    public String getProductApplication(List<Application> applications, long idApplication) {
-        for (Application application : applications) {
-            if (application.getId() == idApplication) {
-                return application.getProduct();
-            }
-        }
-        throw new PageNotFoundException();
     }
 }

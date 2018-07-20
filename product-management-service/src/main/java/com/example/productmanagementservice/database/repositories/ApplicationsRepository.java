@@ -45,4 +45,17 @@ public interface ApplicationsRepository {
 
     @Update("UPDATE applications SET status = 3, description = #{reason} WHERE id = #{idApplication}")
     void negativeApplication(@Param("idApplication") long idApplication, @Param("reason") String reason);
+
+    @Update("UPDATE applications SET product = 'debit-card', limit_on_card = NULL, amount = null, " +
+            "time_in_month = null WHERE id = #{id}")
+    void addDebitCardToApplication(@Param("id") long idApplication);
+
+    @Update("UPDATE applications SET product = 'credit-card',amount = null, time_in_month = null," +
+            " limit_on_card = #{limitOnCard} WHERE id = #{id}")
+    void addCreditCardToApplication(@Param("id") long idApplication, @Param("limitOnCard") int limit);
+
+    @Update("UPDATE applications SET product = 'credit-cash',limit_on_card = null,  amount = #{amount}," +
+            "time_in_month = #{timeInMonth} WHERE id = #{id}")
+    void addCreditCashToApplication(@Param("id") long idApplication, @Param("amount") int amount,
+                                    @Param("timeInMonth") int timeInMonth);
 }

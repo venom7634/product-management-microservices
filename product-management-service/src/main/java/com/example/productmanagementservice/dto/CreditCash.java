@@ -1,8 +1,7 @@
 package com.example.productmanagementservice.dto;
 
-import com.example.productmanagementservice.entity.Product;
 
-public class CreditCash extends Product {
+public class CreditCash {
 
     int timeInMonth;
     int amount;
