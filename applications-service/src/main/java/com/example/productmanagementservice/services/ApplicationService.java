@@ -98,6 +98,7 @@ public class ApplicationService {
         applicationVerificator.checkIsEmptyOfApplication(applications, idApplication);
         productsVerificator.checkProductInApplicationsClient
                 (getProductApplication(applications, idApplication), applications);
+
         checkTotalAmountMoneyHasReachedMax(idApplication);
 
         applicationsRepository.sendApplicationToConfirmation(idApplication);

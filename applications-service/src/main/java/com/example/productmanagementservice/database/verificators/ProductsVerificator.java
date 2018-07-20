@@ -16,12 +16,13 @@ public class ProductsVerificator {
                         .stream()
                         .filter(app -> app.getProduct() != null)
                         .filter(app -> app.getProduct().equals(product)
-                                && app.getStatus() == Application.statusApp.SENT.getStatus())
+                                && app.getStatus() == Application.statusApp.APPROVED.getStatus())
                         .collect(Collectors.toList());
 
-        if (applicationsWithProduct.isEmpty()) {
-            throw new NoAccessException();
+        if (!applicationsWithProduct.isEmpty()) {
+            throw   new NoAccessException();
         }
+
     }
 
 }
