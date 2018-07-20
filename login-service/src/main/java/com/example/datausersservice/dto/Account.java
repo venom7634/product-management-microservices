@@ -9,8 +9,8 @@ public class Account {
         this.login = login;
         this.password = password;
     }
-
     public Account() {
+
     }
 
     public String getLogin() {

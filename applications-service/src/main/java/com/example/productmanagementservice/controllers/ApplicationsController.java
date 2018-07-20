@@ -36,13 +36,13 @@ public class ApplicationsController {
     }
 
     @RequestMapping(value = "/applications/{id}/credit-card", method = RequestMethod.POST)
-    public void addCreditCard(@PathVariable("id") long idApplication, @RequestHeader("token") String token,
+    public void addCreditCash(@PathVariable("id") long idApplication, @RequestHeader("token") String token,
                               @RequestBody CreditCard creditCard) {
         applicationService.addCreditCardToApplication(token, idApplication, creditCard.getLimit());
     }
 
     @RequestMapping(value = "/applications/{id}/credit-cash", method = RequestMethod.POST)
-    public void addCreditCard(@PathVariable("id") long idApplication, @RequestHeader("token") String token,
+    public void addCreditCash(@PathVariable("id") long idApplication, @RequestHeader("token") String token,
                               @RequestBody CreditCash creditCash) {
         applicationService.addCreditCashToApplication(token, idApplication, creditCash.getAmount(),
                 creditCash.getTimeInMonth());
