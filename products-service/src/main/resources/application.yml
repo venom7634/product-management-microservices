@@ -4,10 +4,47 @@ spring:
 
 eureka:
   instance:
-    hostname: localhost
+    appname: products-service
   client:
     serviceUrl:
       defaultZone: http://localhost:8080/eureka/
-
+    fetch-registry: true
 server:
   port: 4003
+
+---
+spring:
+  profiles: products-service1
+eureka:
+  instance:
+    appname: products-service
+  client:
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone:  http://localhost:8080/eureka/
+server:
+  port: 5003
+---
+spring:
+  profiles: products-service2
+eureka:
+  instance:
+    appname: products-service
+  client:
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone:  http://localhost:8080/eureka/
+server:
+  port: 6003
+---
+spring:
+  profiles: products-service3
+eureka:
+  instance:
+    appname: products-service
+  client:
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone:  http://localhost:8080/eureka/
+server:
+  port: 7003
