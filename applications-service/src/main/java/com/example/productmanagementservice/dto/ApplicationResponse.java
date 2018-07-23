@@ -8,23 +8,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApplicationResponse extends Application {
 
-    public enum statusApp {
-        CREATED(0),
-        SENT(1),
-        APPROVED(2),
-        NEGATIVE(3);
-
-        private int status;
-
-        statusApp(int status){
-            this.status = status;
-        }
-
-        public int getStatus() {
-            return status;
-        }
-    }
-
     @JsonIgnore
     private int clientId;
     @JsonIgnore

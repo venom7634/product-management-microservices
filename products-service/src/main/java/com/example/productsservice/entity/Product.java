@@ -35,14 +35,8 @@ public class Product {
     String name;
 
     public Product() {
-
     }
 
-    public Product(String description, Integer id, String name) {
-        this.description = description;
-        this.id = id;
-        this.name = name;
-    }
 
     public String getName() {
         return name;

@@ -11,7 +11,6 @@ public class Statistic {
     int count;
 
     public Statistic() {
-
     }
 
     public String getReason() {

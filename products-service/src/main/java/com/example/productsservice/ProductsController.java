@@ -1,9 +1,7 @@
 package com.example.productsservice;
 
 import com.example.productsservice.dto.StatisticResponse;
-import com.example.productsservice.entity.Statistic;
 import com.example.productsservice.entity.Product;
-import com.example.productsservice.repositories.ProductsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,10 +13,8 @@ public class ProductsController {
     private final
     ProductService productService;
 
-    private ProductsRepository productsRepository;
     @Autowired
-    public ProductsController(ProductService productService, ProductsRepository productsRepository) {
-        this.productsRepository = productsRepository;
+    public ProductsController(ProductService productService) {
         this.productService = productService;
     }
 
@@ -28,9 +24,8 @@ public class ProductsController {
     }
 
     @RequestMapping(value = "/products/", method = RequestMethod.GET)
-    public List<Product> getAllProducts() {
-
-        return productsRepository.getAllProducts();
+    public List<String> getAllProducts() {
+        return productService.getAllProducts();
     }
 
 

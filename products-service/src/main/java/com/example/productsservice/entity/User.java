@@ -27,15 +27,6 @@ public class User {
 
     }
 
-    public User(int id, String login, String password, int security, String name, String description) {
-        this.id = id;
-        this.login = login;
-        this.password = password;
-        this.name = name;
-        this.security = security;
-        this.description = description;
-    }
-
     public int getSecurity() {
         return security;
     }

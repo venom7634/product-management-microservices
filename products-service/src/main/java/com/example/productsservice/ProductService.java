@@ -33,17 +33,17 @@ public class ProductService {
     }
 
     public Product getDescriptionDebitCard() {
-        logger.info("Try add debit-card");
+        logger.info("Get debit-card");
         return getProductOfName("debit-card");
     }
 
     public Product getDescriptionCreditCard() {
-        logger.info("Try add credit-card");
+        logger.info("Get credit-card");
         return getProductOfName("credit-card");
     }
 
     public Product getDescriptionCreditCash() {
-        logger.info("Try add credit-cash");
+        logger.info("Get credit-cash");
         return getProductOfName("credit-cash");
     }
 
@@ -55,7 +55,6 @@ public class ProductService {
                 id = product.getId();
             }
         }
-        logger.info("Get product for id = " + id);
         return productsRepository.getProductOfDataBase(id);
     }
 
@@ -96,6 +95,14 @@ public class ProductService {
         return statisticResponses;
     }
 
+    public List<String> getAllProducts(){
+        List<Product> products = productsRepository.getAllProducts();
+        List<String> results = new ArrayList<>(products.size());
+        for(Product product : products){
+            results.add(product.getName());
+        }
+        return results;
+    }
     private void checkUser(User user) {
         if (user == null) {
             logger.error("User not found");

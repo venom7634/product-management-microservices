@@ -6,11 +6,6 @@ public class CreditCash {
     int timeInMonth;
     int amount;
 
-    public CreditCash(int timeInMonth, int amount) {
-        this.timeInMonth = timeInMonth;
-        this.amount = amount;
-    }
-
     public CreditCash() {
 
     }

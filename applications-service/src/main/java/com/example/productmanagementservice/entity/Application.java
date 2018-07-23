@@ -1,9 +1,5 @@
 package com.example.productmanagementservice.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-
-
 public class Application {
 
     public enum statusApp {
