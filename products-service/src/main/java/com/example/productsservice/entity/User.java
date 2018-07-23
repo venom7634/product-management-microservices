@@ -3,8 +3,17 @@ package com.example.productsservice.entity;
 public class User {
 
     public enum access {
-        EMPLOYEE_BANK,
-        CLIENT
+        EMPLOYEE_BANK(0),
+        CLIENT(1);
+
+        int number;
+        access(int number){
+            this.number = number;
+        }
+
+        public int getNumber() {
+            return number;
+        }
     }
 
     int id;

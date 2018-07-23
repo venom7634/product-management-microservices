@@ -1,5 +1,6 @@
 package com.example.productmanagementservice.database.repositories;
 
+import com.example.productmanagementservice.dto.ApplicationResponse;
 import com.example.productmanagementservice.dto.Statistic;
 import com.example.productmanagementservice.entity.Application;
 import org.apache.ibatis.annotations.*;
@@ -23,7 +24,7 @@ public interface ApplicationsRepository {
     List<Application> getAllClientApplications(@Param("userId") long userId);
 
     @Select("select * from applications where client_id = #{userId} order by id desc limit 1")
-    Application getNewApplication(@Param("userId") long userId);
+    ApplicationResponse getNewApplication(@Param("userId") long userId);
 
     @Update("UPDATE applications SET status = 1 WHERE id = #{id}")
     void sendApplicationToConfirmation(@Param("id") long idApplication);
@@ -31,7 +32,7 @@ public interface ApplicationsRepository {
     @Select("select applications.id, client_id, status, product, limit_on_card as limit, amount, time_in_month " +
             "from applications " +
             "where client_id = #{userId} AND status = 1")
-    List<Application> getListSentApplicationsOfDataBase(@Param("userId") long userId);
+    List<ApplicationResponse> getListSentApplicationsOfDataBase(@Param("userId") long userId);
 
     @Select("select * from applications where client_id = #{userId} and status = 2")
     List<Application> getListApprovedApplicationsOfDatabase(@Param("userId") long userId);

@@ -4,11 +4,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.example</groupId>
-    <artifactId>product-management-service</artifactId>
+    <artifactId>applications-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>product-management-service</name>
+    <name>applications-service</name>
     <description>REST-Service for managing the products of the bank&#39;s users</description>
 
     <parent>

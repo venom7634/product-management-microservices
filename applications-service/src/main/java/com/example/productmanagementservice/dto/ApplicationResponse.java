@@ -1,10 +1,12 @@
-package com.example.productmanagementservice.entity;
+package com.example.productmanagementservice.dto;
 
+import com.example.productmanagementservice.entity.Application;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 
-public class Application {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class ApplicationResponse extends Application {
 
     public enum statusApp {
         CREATED(0),
@@ -23,8 +25,11 @@ public class Application {
         }
     }
 
+    @JsonIgnore
     private int clientId;
+    @JsonIgnore
     int status;
+
     int id;
     private String product;
     private String limit;
@@ -33,7 +38,7 @@ public class Application {
 
     private String description;
 
-    public Application() {
+    public ApplicationResponse() {
     }
 
     public String getDescription() {

@@ -2,11 +2,6 @@ package com.example.datausersservice.entity;
 
 public class User {
 
-    public enum access {
-        EMPLOYEE_BANK,
-        CLIENT
-    }
-
     int id;
     String login;
     String password;
@@ -15,16 +10,6 @@ public class User {
     String description;
 
     public User() {
-
-    }
-
-    public User(int id, String login, String password, int security, String name, String description) {
-        this.id = id;
-        this.login = login;
-        this.password = password;
-        this.name = name;
-        this.security = security;
-        this.description = description;
     }
 
     public int getSecurity() {

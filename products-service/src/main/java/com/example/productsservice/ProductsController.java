@@ -2,6 +2,7 @@ package com.example.productsservice;
 
 import com.example.productsservice.dto.Statistic;
 import com.example.productsservice.entity.Product;
+import com.example.productsservice.repositories.ProductsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,11 +11,13 @@ import java.util.List;
 @RestController
 public class ProductsController {
 
-    final
+    private final
     ProductService productService;
 
+    private ProductsRepository productsRepository;
     @Autowired
     public ProductsController(ProductService productService) {
+        this.productsRepository = productsRepository;
         this.productService = productService;
     }
 
@@ -22,6 +25,13 @@ public class ProductsController {
     public Product getDescriptionDebitCard() {
         return productService.getDescriptionDebitCard();
     }
+
+    @RequestMapping(value = "/products/", method = RequestMethod.GET)
+    public List<Product> getAllProducts() {
+
+        return productsRepository.getAllProducts();
+    }
+
 
     @RequestMapping(value = "/products/credit-card", method = RequestMethod.GET)
     public Product getDescriptionCreditCard() {

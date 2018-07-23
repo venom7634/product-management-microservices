@@ -7,6 +7,7 @@ import com.example.productsservice.entity.Product;
 import com.example.productsservice.entity.User;
 import com.example.productsservice.exceptions.NoAccessException;
 import com.example.productsservice.repositories.ProductsRepository;
+import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -51,18 +52,18 @@ public class ProductService {
     }
 
     public List<Statistic> getStatisticUsesProducts(String token) {
-        User user = usersServiceClient.getUserById(usersServiceClient.getIdByToken(token));
+        User user = usersServiceClient.getUserById(getIdByToken(token));
 
-        isExistsUser(user);
+        checkUser(user);
         authenticationOfBankEmployee(user.getSecurity());
 
         return calculatePercent(applicationsServiceClient.getApprovedStatistics());
     }
 
     public List<Statistic> getStatisticsNegativeApplications(String token) {
-        User user = usersServiceClient.getUserById(usersServiceClient.getIdByToken(token));
+        User user = usersServiceClient.getUserById(getIdByToken(token));
 
-        isExistsUser(user);
+        checkUser(user);
         authenticationOfBankEmployee(user.getSecurity());
 
         return calculatePercent(applicationsServiceClient.getNegativeStatistics());
@@ -84,12 +85,21 @@ public class ProductService {
         return statistics;
     }
 
-    public void isExistsUser(User user) {
+    private void checkUser(User user) {
         if (user == null) {
             throw new NoAccessException();
         }
     }
-    public boolean authenticationOfBankEmployee(int securityStatus) {
-        return securityStatus == User.access.EMPLOYEE_BANK.ordinal();
+
+    private void authenticationOfBankEmployee(int securityStatus) {
+        if(!(securityStatus == User.access.EMPLOYEE_BANK.getNumber())) {
+            throw new NoAccessException();
+        }
+    }
+
+    private long getIdByToken(String token) {
+        int i = token.lastIndexOf('.');
+        String tokenWithoutKey = token.substring(0,i+1);
+        return Long.parseLong(Jwts.parser().parseClaimsJwt(tokenWithoutKey).getBody().getSubject());
     }
 }

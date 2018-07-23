@@ -19,7 +19,7 @@ public class LoginController {
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public Token signUp(@RequestBody Account account) {
+    public Token login(@RequestBody Account account) {
         return loginHandler.login(account.getLogin(), account.getPassword());
     }
 

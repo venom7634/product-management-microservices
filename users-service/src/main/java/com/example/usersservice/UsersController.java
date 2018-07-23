@@ -7,22 +7,15 @@ import org.springframework.web.bind.annotation.*;
 public class UsersController {
 
     private final UsersRepository usersRepository;
-    private final UserService userService;
 
     @Autowired
-    public UsersController(UsersRepository usersRepository, UserService userService) {
+    public UsersController(UsersRepository usersRepository) {
         this.usersRepository = usersRepository;
-        this.userService = userService;
     }
 
     @RequestMapping(value = "/users/{id}", method = RequestMethod.GET)
     public User getUserById(@PathVariable("id") long id) {
         return usersRepository.getUserById(id);
-    }
-
-    @RequestMapping(value = "/users/getIdByToken", method = RequestMethod.POST)
-    public long getIdByToken(@RequestBody String token) {
-        return userService.getIdByToken(token);
     }
 
     @RequestMapping(value = "/users/getUserByLogin", method = RequestMethod.POST)

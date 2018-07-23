@@ -1,6 +1,8 @@
-package com.example.usersservice;
+package com.example.productmanagementservice.dto;
 
-public class User {
+import com.example.productmanagementservice.entity.User;
+
+public class UserRequest extends User {
 
     int id;
     String login;
@@ -9,7 +11,7 @@ public class User {
     String name;
     String description;
 
-    public User() {
+    public UserRequest() {
     }
 
     public int getSecurity() {
@@ -39,7 +41,6 @@ public class User {
     public void setDescription(String description) {
         this.description = description;
     }
-
 
     public int getId() {
         return id;

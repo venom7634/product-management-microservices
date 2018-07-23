@@ -18,12 +18,11 @@ public class LoginService {
     @Autowired
     public LoginService(UsersServiceClient usersServiceClient) {
         this.usersServiceClient = usersServiceClient;
-
     }
 
     public Token login(String login, String password) {
         User user = usersServiceClient.getUserByLogin(login);
-        checkingUser(user, password);
+        checkUser(user, password);
 
         return new Token(createToken(login));
     }
@@ -44,10 +43,10 @@ public class LoginService {
         return token;
     }
 
-    public boolean checkingUser(User user, String password) {
+    private void checkUser(User user, String password) {
         if (!(user == null) && user.getPassword().equals(password)) {
-            return true;
+        } else{
+            throw new NoAccessException();
         }
-        throw new NoAccessException();
     }
 }

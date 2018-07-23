@@ -1,11 +1,8 @@
 package com.example.productmanagementservice.controllers;
 
 import com.example.productmanagementservice.database.repositories.ApplicationsRepository;
-import com.example.productmanagementservice.dto.Statistic;
+import com.example.productmanagementservice.dto.*;
 import com.example.productmanagementservice.entity.Application;
-import com.example.productmanagementservice.dto.Reason;
-import com.example.productmanagementservice.dto.CreditCard;
-import com.example.productmanagementservice.dto.CreditCash;
 import com.example.productmanagementservice.services.ApplicationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +22,7 @@ public class ApplicationsController {
     }
 
     @RequestMapping(value = "/applications", method = RequestMethod.POST)
-    public Application createApplications(@RequestHeader("token") String token) {
+    public ApplicationResponse createApplications(@RequestHeader("token") String token) {
         return applicationService.createApplication(token);
     }
 
@@ -54,13 +51,13 @@ public class ApplicationsController {
     }
 
     @RequestMapping(value = "/applications", method = RequestMethod.GET)
-    public List<Application> getListApplicationsClientForApproval(@RequestParam("userId") long userId,
-                                                                  @RequestHeader("token") String token) {
+    public List<ApplicationResponse> getListApplicationsClientForApproval(@RequestParam("userId") long userId,
+                                                                          @RequestHeader("token") String token) {
         return applicationService.getApplicationsClientForApproval(userId, token);
     }
 
     @RequestMapping(value = "/applications/my", method = RequestMethod.GET)
-    public List<Application> getMyListApplicationsForApproval(@RequestHeader("token") String token) {
+    public List<ApplicationResponse> getMyListApplicationsForApproval(@RequestHeader("token") String token) {
         return applicationService.getApplicationsForApproval(token);
     }
 

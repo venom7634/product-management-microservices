@@ -1,14 +1,23 @@
 package com.example.productmanagementservice.database.verificators;
 
+import com.example.productmanagementservice.clients.ProductsServiceClient;
 import com.example.productmanagementservice.entity.Application;
 import com.example.productmanagementservice.exceptions.NoAccessException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
 public class ProductsVerificator {
+
+    private final ProductsServiceClient productsServiceClient;
+
+    @Autowired
+    public ProductsVerificator(ProductsServiceClient productsServiceClient) {
+        this.productsServiceClient = productsServiceClient;
+    }
 
     public void checkProductInApplicationsClient(String product, List<Application> applications) {
         List<Application> applicationsWithProduct =
@@ -20,9 +29,21 @@ public class ProductsVerificator {
                         .collect(Collectors.toList());
 
         if (!applicationsWithProduct.isEmpty()) {
-            throw   new NoAccessException();
+            throw new NoAccessException();
         }
 
     }
 
+    public void checkOnAllProductsInApplicationsClient(List<Application> applications){
+        Set<String> allProducts = new HashSet<>(productsServiceClient.getAllProducts());
+        Set<String> productsInApplications = new HashSet<>();
+
+        for(Application application : applications){
+            productsInApplications.add(application.getProduct());
+        }
+
+        if (!allProducts.containsAll(productsInApplications)){
+            throw new NoAccessException();
+        }
+    }
 }

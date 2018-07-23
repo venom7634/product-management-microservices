@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 @Component
 public class ApplicationVerificator {
 
-    public void isExistsApplication(List<Application> applications, long idApplication) {
+    public void checkApplication(List<Application> applications, long idApplication) {
         List<Application> createdApplications =
                 applications
                         .stream()
@@ -66,14 +66,16 @@ public class ApplicationVerificator {
             throw new IncorrectValueException();
         }
     }
-    public void isExistsUser(User user) {
+    public void checkUser(User user) {
         if (user == null) {
             throw new NoAccessException();
         }
     }
 
-    public boolean authenticationOfBankEmployee(int securityStatus) {
-        return securityStatus == User.access.EMPLOYEE_BANK.ordinal();
+    public void authenticationOfBankEmployee(int securityStatus) {
+        if(!(securityStatus == User.access.EMPLOYEE_BANK.getNumber())) {
+            throw new NoAccessException();
+        }
     }
 
 }

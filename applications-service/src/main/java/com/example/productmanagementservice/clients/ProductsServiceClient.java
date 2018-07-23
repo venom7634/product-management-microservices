@@ -1,15 +1,16 @@
-package com.example.productsservice.clients;
+package com.example.productmanagementservice.clients;
 
-import com.example.productsservice.entity.User;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-@FeignClient("users-service")
-public interface UsersServiceClient {
+import java.util.List;
 
-    @RequestMapping(value = "/users/{id}", method = RequestMethod.GET)
-    User getUserById(@PathVariable("id") long id);
+@FeignClient("users-service")
+public interface ProductsServiceClient {
+
+    @RequestMapping(value = "/products/", method = RequestMethod.GET)
+    List<String> getAllProducts();
 
 }
