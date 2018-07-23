@@ -1,4 +1,4 @@
-package com.example.productsservice.dto;
+package com.example.productsservice.entity;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

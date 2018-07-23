@@ -2,7 +2,8 @@ package com.example.productsservice;
 
 import com.example.productsservice.clients.ApplicationsServiceClient;
 import com.example.productsservice.clients.UsersServiceClient;
-import com.example.productsservice.dto.Statistic;
+import com.example.productsservice.dto.StatisticResponse;
+import com.example.productsservice.entity.Statistic;
 import com.example.productsservice.entity.Product;
 import com.example.productsservice.entity.User;
 import com.example.productsservice.exceptions.NoAccessException;
@@ -13,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -57,7 +59,7 @@ public class ProductService {
         return productsRepository.getProductOfDataBase(id);
     }
 
-    public List<Statistic> getStatisticUsesProducts(String token) {
+    public List<StatisticResponse> getStatisticUsesProducts(String token) {
         User user = usersServiceClient.getUserById(getIdByToken(token));
 
         checkUser(user);
@@ -66,7 +68,7 @@ public class ProductService {
         return calculatePercent(applicationsServiceClient.getApprovedStatistics());
     }
 
-    public List<Statistic> getStatisticsNegativeApplications(String token) {
+    public List<StatisticResponse> getStatisticsNegativeApplications(String token) {
         User user = usersServiceClient.getUserById(getIdByToken(token));
 
         checkUser(user);
@@ -76,19 +78,22 @@ public class ProductService {
     }
 
 
-    public List<Statistic> calculatePercent(List<Statistic> statistics) {
+    public List<StatisticResponse> calculatePercent(List<Statistic> statistics) {
         double count = 0;
-
+        List<StatisticResponse> statisticResponses = new ArrayList<>();
         for (Statistic statistic : statistics) {
             count += statistic.getCount();
         }
 
         for (Statistic statistic : statistics) {
-            statistic.setPercent(Math.round(statistic.getCount() / count * 10000) / 100.0);
-            statistic.setCount(null);
+            StatisticResponse statisticResponse = new StatisticResponse();
+            statisticResponse.setPercent(Math.round(statistic.getCount() / count * 10000) / 100.0);
+            statisticResponse.setName(statistic.getName());
+            statisticResponse.setReason(statistic.getReason());
+            statisticResponses.add(statisticResponse);
         }
 
-        return statistics;
+        return statisticResponses;
     }
 
     private void checkUser(User user) {

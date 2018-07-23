@@ -1,6 +1,7 @@
 package com.example.productsservice;
 
-import com.example.productsservice.dto.Statistic;
+import com.example.productsservice.dto.StatisticResponse;
+import com.example.productsservice.entity.Statistic;
 import com.example.productsservice.entity.Product;
 import com.example.productsservice.repositories.ProductsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,12 +46,12 @@ public class ProductsController {
 
 
     @RequestMapping(value = "/products/statistics/approvedApplications", method = RequestMethod.GET)
-    public List<Statistic> getStatisticsApprovedApplications(@RequestHeader("token") String token) {
+    public List<StatisticResponse> getStatisticsApprovedApplications(@RequestHeader("token") String token) {
         return productService.getStatisticUsesProducts(token);
     }
 
     @RequestMapping(value = "/products/statistics/negativeApplications", method = RequestMethod.GET)
-    public List<Statistic> getStatisticsNegativeApplications(@RequestHeader("token") String token) {
+    public List<StatisticResponse> getStatisticsNegativeApplications(@RequestHeader("token") String token) {
         return productService.getStatisticsNegativeApplications(token);
     }
 }
