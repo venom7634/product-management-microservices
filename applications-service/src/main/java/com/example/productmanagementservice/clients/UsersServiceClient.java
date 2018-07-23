@@ -11,5 +11,4 @@ public interface UsersServiceClient {
 
     @RequestMapping(value = "/users/{id}", method = RequestMethod.GET)
     UserRequest getUserById(@PathVariable("id") long id);
-
 }

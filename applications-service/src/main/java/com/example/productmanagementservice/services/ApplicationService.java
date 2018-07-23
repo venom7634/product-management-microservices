@@ -1,5 +1,6 @@
 package com.example.productmanagementservice.services;
 
+import com.example.productmanagementservice.clients.ProductsServiceClient;
 import com.example.productmanagementservice.clients.UsersServiceClient;
 import com.example.productmanagementservice.database.repositories.ApplicationsRepository;
 import com.example.productmanagementservice.database.verificators.ApplicationVerificator;
@@ -10,13 +11,16 @@ import com.example.productmanagementservice.entity.Token;
 import com.example.productmanagementservice.entity.User;
 import com.example.productmanagementservice.exceptions.*;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class ApplicationService {
@@ -26,14 +30,16 @@ public class ApplicationService {
     private final ProductsVerificator productsVerificator;
     private final ApplicationsRepository applicationsRepository;
     private final UsersServiceClient usersServiceClient;
+    private final ProductsServiceClient productsServiceClient;
 
     @Resource(name = "token")
     Token token;
 
     @Autowired
     public ApplicationService(UsersServiceClient usersServiceClient, ApplicationsRepository applicationsRepository,
-                              ApplicationVerificator applicationVerificator, ProductsVerificator productsVerificator) {
-
+                              ApplicationVerificator applicationVerificator, ProductsVerificator productsVerificator,
+                              ProductsServiceClient productsServiceClient) {
+        this.productsServiceClient = productsServiceClient;
         this.usersServiceClient = usersServiceClient;
         this.applicationsRepository = applicationsRepository;
         this.applicationVerificator = applicationVerificator;
@@ -43,9 +49,10 @@ public class ApplicationService {
     public ApplicationResponse createApplication() {
         long id = getIdByToken(token.getToken());
         User user = usersServiceClient.getUserById(id);
+        Set<String> allProducts = new HashSet<>(productsServiceClient.getAllProducts());
         applicationVerificator.checkUser(user);
         List<Application> applications = applicationsRepository.getAllClientApplications(user.getId());
-        productsVerificator.checkOnAllProductsInApplicationsClient(applications);
+        productsVerificator.checkOnAllProductsInApplicationsClient(applications, allProducts);
         applicationsRepository.createNewApplicationInDatabase(id);
         return applicationsRepository.getNewApplication(id);
     }
@@ -129,12 +136,12 @@ public class ApplicationService {
 
     public void approveApplication(long idApplication ) {
         User user = usersServiceClient.getUserById(getIdByToken(token.getToken()));
-        List<Application> applications = applicationsRepository
-                .getAllClientApplications(usersServiceClient.getUserById
-                        (applicationsRepository.getIdUserByApplications(idApplication)).getId());
+        Application application = applicationsRepository.getApplicationById(idApplication);
+
+        applicationVerificator.checkApplication(application);
+        List<Application> applications = applicationsRepository.getAllClientApplications(application.getClientId());
 
         applicationVerificator.checkUser(user);
-        applicationVerificator.checkApplication(applications, idApplication);
         applicationVerificator.checkForChangeStatusApplication(applications, idApplication);
         productsVerificator.checkProductInApplicationsClient
                 (getProductApplication(applications, idApplication), applications);
@@ -149,12 +156,12 @@ public class ApplicationService {
 
     public void negativeApplication(long idApplication, String reason) {
         User user = usersServiceClient.getUserById(getIdByToken(token.getToken()));
-        List<Application> applications = applicationsRepository
-                .getAllClientApplications(usersServiceClient.getUserById
-                        (applicationsRepository.getIdUserByApplications(idApplication)).getId());
+        Application application = applicationsRepository.getApplicationById(idApplication);
+
+        applicationVerificator.checkApplication(application);
+        List<Application> applications = applicationsRepository.getAllClientApplications(application.getClientId());
 
         applicationVerificator.checkUser(user);
-        applicationVerificator.checkApplication(applications, idApplication);
         applicationVerificator.checkForChangeStatusApplication(applications, idApplication);
         applicationVerificator.authenticationOfBankEmployee(user.getSecurity());
 
@@ -204,6 +211,9 @@ public class ApplicationService {
     private long getIdByToken(String token) {
         int i = token.lastIndexOf('.');
         String tokenWithoutKey = token.substring(0,i+1);
+        if(tokenWithoutKey.equals("")){
+            throw new SignatureException("Signature token not valid");
+        }
         return Long.parseLong(Jwts.parser().parseClaimsJwt(tokenWithoutKey).getBody().getSubject());
     }
 }

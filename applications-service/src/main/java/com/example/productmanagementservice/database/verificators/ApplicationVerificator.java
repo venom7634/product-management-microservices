@@ -2,10 +2,7 @@ package com.example.productmanagementservice.database.verificators;
 
 import com.example.productmanagementservice.entity.Application;
 import com.example.productmanagementservice.entity.User;
-import com.example.productmanagementservice.exceptions.ApplicationNoExistsException;
-import com.example.productmanagementservice.exceptions.IncorrectValueException;
-import com.example.productmanagementservice.exceptions.NoAccessException;
-import com.example.productmanagementservice.exceptions.NotMatchUserException;
+import com.example.productmanagementservice.exceptions.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -17,12 +14,16 @@ import java.util.stream.Collectors;
 public class ApplicationVerificator {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    public  void  checkApplication(Application application){
+        if (application == null) {
+            throw new PageNotFoundException();
+        }
+    }
     public void checkApplication(List<Application> applications, long idApplication) {
         List<Application> createdApplications =
                 applications
                         .stream()
-                        .filter(app -> (app.getStatus() == Application.statusApp.CREATED.getStatus()
-                                || app.getStatus() == Application.statusApp.SENT.getStatus())
+                        .filter(app -> (app.getStatus() == Application.statusApp.CREATED.getStatus())
                                 && app.getId() == idApplication)
                         .collect(Collectors.toList());
 

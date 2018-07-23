@@ -14,7 +14,7 @@ public class ExceptionController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @ExceptionHandler(ExpiredJwtException.class)
-    protected ResponseEntity handleConflict(RuntimeException ex, WebRequest request){
+    protected ResponseEntity handleConflict(RuntimeException ex, WebRequest request) {
         logger.error("Token expired");
         return new ResponseEntity(HttpStatus.FORBIDDEN);
     }

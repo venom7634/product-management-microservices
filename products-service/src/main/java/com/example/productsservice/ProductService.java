@@ -5,25 +5,33 @@ import com.example.productsservice.clients.UsersServiceClient;
 import com.example.productsservice.dto.StatisticResponse;
 import com.example.productsservice.entity.Statistic;
 import com.example.productsservice.entity.Product;
+import com.example.productsservice.entity.Token;
 import com.example.productsservice.entity.User;
 import com.example.productsservice.exceptions.NoAccessException;
 import com.example.productsservice.repositories.ProductsRepository;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class ProductService {
+
+    @Resource(name = "token")
+    Token token;
+
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final ProductsRepository productsRepository;
     private final UsersServiceClient usersServiceClient;
     private final ApplicationsServiceClient applicationsServiceClient;
+
     @Autowired
     public ProductService(ApplicationsServiceClient applicationsServiceClient, UsersServiceClient usersServiceClient,
                           ProductsRepository productsRepository) {
@@ -48,18 +56,11 @@ public class ProductService {
     }
 
     public Product getProductOfName(String checkingProduct) {
-        int id = 0;
-
-        for (Product.type product : Product.type.values()) {
-            if (checkingProduct.equals(product.getName())) {
-                id = product.getId();
-            }
-        }
-        return productsRepository.getProductOfDataBase(id);
+        return productsRepository.getProductOfDataBase(checkingProduct);
     }
 
-    public List<StatisticResponse> getStatisticUsesProducts(String token) {
-        User user = usersServiceClient.getUserById(getIdByToken(token));
+    public List<StatisticResponse> getStatisticUsesProducts() {
+        User user = usersServiceClient.getUserById(getIdByToken(token.getToken()));
 
         checkUser(user);
         authenticationOfBankEmployee(user.getSecurity());
@@ -67,8 +68,8 @@ public class ProductService {
         return calculatePercent(applicationsServiceClient.getApprovedStatistics());
     }
 
-    public List<StatisticResponse> getStatisticsNegativeApplications(String token) {
-        User user = usersServiceClient.getUserById(getIdByToken(token));
+    public List<StatisticResponse> getStatisticsNegativeApplications() {
+        User user = usersServiceClient.getUserById(getIdByToken(token.getToken()));
 
         checkUser(user);
         authenticationOfBankEmployee(user.getSecurity());
@@ -95,14 +96,15 @@ public class ProductService {
         return statisticResponses;
     }
 
-    public List<String> getAllProducts(){
+    public List<String> getAllProducts() {
         List<Product> products = productsRepository.getAllProducts();
         List<String> results = new ArrayList<>(products.size());
-        for(Product product : products){
+        for (Product product : products) {
             results.add(product.getName());
         }
         return results;
     }
+
     private void checkUser(User user) {
         if (user == null) {
             logger.error("User not found");
@@ -111,7 +113,7 @@ public class ProductService {
     }
 
     private void authenticationOfBankEmployee(int securityStatus) {
-        if(!(securityStatus == User.access.EMPLOYEE_BANK.getNumber())) {
+        if (!(securityStatus == User.access.EMPLOYEE_BANK.getNumber())) {
             logger.warn("User not employee bank");
             throw new NoAccessException();
         }
@@ -119,7 +121,10 @@ public class ProductService {
 
     private long getIdByToken(String token) {
         int i = token.lastIndexOf('.');
-        String tokenWithoutKey = token.substring(0,i+1);
+        String tokenWithoutKey = token.substring(0, i + 1);
+        if(tokenWithoutKey.equals("")){
+            throw new SignatureException("Signature token not valid");
+        }
         return Long.parseLong(Jwts.parser().parseClaimsJwt(tokenWithoutKey).getBody().getSubject());
     }
 }

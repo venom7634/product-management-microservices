@@ -13,8 +13,8 @@ import java.util.List;
 @Repository
 public interface ProductsRepository {
 
-    @Select("select * from products where id = #{id}")
-    Product getProductOfDataBase(@Param("id") long id);
+    @Select("select * from products where name = #{name}")
+    Product getProductOfDataBase(@Param("name") String name);
 
     @Select("select * from products")
     List<Product> getAllProducts();

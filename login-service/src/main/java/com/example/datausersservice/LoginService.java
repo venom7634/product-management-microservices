@@ -20,7 +20,7 @@ public class LoginService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    public LoginService( UsersServiceClient usersServiceClient) {
+    public LoginService(UsersServiceClient usersServiceClient) {
         this.usersServiceClient = usersServiceClient;
     }
 
@@ -50,7 +50,7 @@ public class LoginService {
 
     private void checkUser(User user, String password) {
         if (!(user == null) && user.getPassword().equals(password)) {
-        } else{
+        } else {
             logger.error("User not found");
             throw new NoAccessException();
         }

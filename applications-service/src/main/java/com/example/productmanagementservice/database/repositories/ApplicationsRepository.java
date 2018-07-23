@@ -17,13 +17,13 @@ public interface ApplicationsRepository {
             "VALUES (#{id}, 0, null, null, null, null, null)")
     void createNewApplicationInDatabase(@Param("id") long idUser);
 
-    @Select("select * from applications where id = #{id}")
+    @Select("select *, client_id as clientId, limit_on_card as limit, time_in_month as timeInMonth from applications where id = #{id}")
     Application getApplicationById(@Param("id") long idApplication);
 
-    @Select("select *, client_id as clientId from applications where client_id = #{userId}")
+    @Select("select *, client_id as clientId, limit_on_card as limit, time_in_month as timeInMonth from applications where client_id = #{userId}")
     List<Application> getAllClientApplications(@Param("userId") long userId);
 
-    @Select("select * from applications where client_id = #{userId} order by id desc limit 1")
+    @Select("select *, limit_on_card as limit, time_in_month as timeInMonth from applications where client_id = #{userId} order by id desc limit 1")
     ApplicationResponse getNewApplication(@Param("userId") long userId);
 
     @Update("UPDATE applications SET status = 1 WHERE id = #{id}")
@@ -34,7 +34,7 @@ public interface ApplicationsRepository {
             "where client_id = #{userId} AND status = 1")
     List<ApplicationResponse> getListSentApplicationsOfDataBase(@Param("userId") long userId);
 
-    @Select("select * from applications where client_id = #{userId} and status = 2")
+    @Select("select *, client_id as clientId from applications where client_id = #{userId} and status = 2")
     List<Application> getListApprovedApplicationsOfDatabase(@Param("userId") long userId);
 
     @Update("UPDATE applications SET status = 2, description = 'Approved' WHERE id = #{idApplication}")
@@ -59,9 +59,6 @@ public interface ApplicationsRepository {
             "time_in_month = #{timeInMonth} WHERE id = #{id}")
     void addCreditCashToApplication(@Param("id") long idApplication, @Param("amount") int amount,
                                     @Param("timeInMonth") int timeInMonth);
-
-    @Select("SELECT client_id FROM applications WHERE id = #{id}")
-    long getIdUserByApplications(@Param("id") long id);
 
     @Select("SELECT COUNT(id) as count, product FROM applications GROUP BY product, status HAVING status = 2")
     List<Statistic> getApprovedStatistics();

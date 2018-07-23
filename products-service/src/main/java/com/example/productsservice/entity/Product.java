@@ -13,11 +13,12 @@ public class Product {
         private String name;
         private int id;
 
-        type(String name, int id){
-            this.name = name; this.id = id;
+        type(String name, int id) {
+            this.name = name;
+            this.id = id;
         }
 
-        public String getName(){
+        public String getName() {
             return this.name;
         }
 

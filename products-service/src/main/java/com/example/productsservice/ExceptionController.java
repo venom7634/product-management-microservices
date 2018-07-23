@@ -1,6 +1,7 @@
 package com.example.productsservice;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.SignatureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -12,11 +13,16 @@ import org.springframework.web.context.request.WebRequest;
 @ControllerAdvice
 public class ExceptionController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    @ExceptionHandler(ExpiredJwtException.class)
 
-    protected ResponseEntity handleConflict(RuntimeException ex, WebRequest request){
+    @ExceptionHandler(ExpiredJwtException.class)
+    protected ResponseEntity handleConflict(RuntimeException ex, WebRequest request) {
         logger.error("Token expired");
         return new ResponseEntity(HttpStatus.FORBIDDEN);
     }
 
+    @ExceptionHandler(SignatureException.class)
+    protected ResponseEntity incorretValue(RuntimeException ex, WebRequest request){
+        logger.error("Token not valid");
+        return new ResponseEntity(HttpStatus.FORBIDDEN);
+    }
 }

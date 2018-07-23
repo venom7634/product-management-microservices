@@ -23,7 +23,7 @@ public class ProductsController {
         return productService.getDescriptionDebitCard();
     }
 
-    @RequestMapping(value = "/products/", method = RequestMethod.GET)
+    @RequestMapping(value = "/products", method = RequestMethod.GET)
     public List<String> getAllProducts() {
         return productService.getAllProducts();
     }
@@ -41,12 +41,12 @@ public class ProductsController {
 
 
     @RequestMapping(value = "/products/statistics/approvedApplications", method = RequestMethod.GET)
-    public List<StatisticResponse> getStatisticsApprovedApplications(@RequestHeader("token") String token) {
-        return productService.getStatisticUsesProducts(token);
+    public List<StatisticResponse> getStatisticsApprovedApplications() {
+        return productService.getStatisticUsesProducts();
     }
 
     @RequestMapping(value = "/products/statistics/negativeApplications", method = RequestMethod.GET)
-    public List<StatisticResponse> getStatisticsNegativeApplications(@RequestHeader("token") String token) {
-        return productService.getStatisticsNegativeApplications(token);
+    public List<StatisticResponse> getStatisticsNegativeApplications() {
+        return productService.getStatisticsNegativeApplications();
     }
 }

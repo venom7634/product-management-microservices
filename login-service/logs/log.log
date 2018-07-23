@@ -190,3 +190,88 @@ com.netflix.client.ClientException: Load balancer does not have available server
 
 2018-07-23 12:27:39.129  INFO 2708 --- [http-nio-1000-exec-3] c.e.datausersservice.LoginController     : Try to login
 2018-07-23 12:27:39.419  INFO 2708 --- [http-nio-1000-exec-3] c.example.datausersservice.LoginService  : Token created
+2018-07-23 14:41:06.691  INFO 12976 --- [main] c.e.d.DataUsersServiceApplication        : No active profile set, falling back to default profiles: default
+2018-07-23 14:41:08.002  WARN 12976 --- [main] c.n.c.sources.URLConfigurationSource     : No URLs will be polled as dynamic configuration sources.
+2018-07-23 14:41:08.006  WARN 12976 --- [main] c.n.c.sources.URLConfigurationSource     : No URLs will be polled as dynamic configuration sources.
+2018-07-23 14:41:08.467  WARN 12976 --- [main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'org.springframework.boot.autoconfigure.jdbc.DataSourceJmxConfiguration$Hikari': Invocation of init method failed; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'scopedTarget.dataSource' defined in class path resource [org/springframework/boot/autoconfigure/jdbc/DataSourceConfiguration$Hikari.class]: Bean instantiation via factory method failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [com.zaxxer.hikari.HikariDataSource]: Factory method 'dataSource' threw exception; nested exception is org.springframework.boot.autoconfigure.jdbc.DataSourceProperties$DataSourceBeanCreationException: Failed to determine a suitable driver class
+2018-07-23 14:41:08.487 ERROR 12976 --- [main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Failed to configure a DataSource: 'url' attribute is not specified and no embedded datasource could be configured.
+
+Reason: Failed to determine a suitable driver class
+
+
+Action:
+
+Consider the following:
+	If you want an embedded database (H2, HSQL or Derby), please put it on the classpath.
+	If you have database settings to be loaded from a particular profile you may need to activate it (no profiles are currently active).
+
+2018-07-23 14:42:15.502  INFO 1312 --- [main] c.e.d.DataUsersServiceApplication        : No active profile set, falling back to default profiles: default
+2018-07-23 14:42:16.615  WARN 1312 --- [main] c.n.c.sources.URLConfigurationSource     : No URLs will be polled as dynamic configuration sources.
+2018-07-23 14:42:16.620  WARN 1312 --- [main] c.n.c.sources.URLConfigurationSource     : No URLs will be polled as dynamic configuration sources.
+2018-07-23 14:42:17.989  INFO 1312 --- [main] c.e.d.DataUsersServiceApplication        : Started DataUsersServiceApplication in 3.548 seconds (JVM running for 4.112)
+2018-07-23 14:44:44.170  INFO 3768 --- [main] c.e.d.DataUsersServiceApplication        : No active profile set, falling back to default profiles: default
+2018-07-23 14:44:45.313  WARN 3768 --- [main] c.n.c.sources.URLConfigurationSource     : No URLs will be polled as dynamic configuration sources.
+2018-07-23 14:44:45.318  WARN 3768 --- [main] c.n.c.sources.URLConfigurationSource     : No URLs will be polled as dynamic configuration sources.
+2018-07-23 14:44:46.679  INFO 3768 --- [main] c.e.d.DataUsersServiceApplication        : Started DataUsersServiceApplication in 3.569 seconds (JVM running for 4.165)
+2018-07-23 14:46:38.569  INFO 3768 --- [http-nio-4001-exec-1] c.e.datausersservice.LoginController     : Try to login
+2018-07-23 14:46:39.187  INFO 3768 --- [http-nio-4001-exec-1] c.example.datausersservice.LoginService  : Token created
+2018-07-23 14:46:49.460  INFO 3768 --- [http-nio-4001-exec-2] c.e.datausersservice.LoginController     : Try to login
+2018-07-23 14:46:49.468 ERROR 3768 --- [http-nio-4001-exec-2] c.example.datausersservice.LoginService  : User not found
+2018-07-23 14:47:04.106  INFO 3768 --- [http-nio-4001-exec-3] c.e.datausersservice.LoginController     : Try to login
+2018-07-23 14:47:04.114 ERROR 3768 --- [http-nio-4001-exec-3] c.example.datausersservice.LoginService  : User not found
+2018-07-23 14:47:09.223  INFO 3768 --- [http-nio-4001-exec-5] c.e.datausersservice.LoginController     : Try to login
+2018-07-23 14:47:09.239  INFO 3768 --- [http-nio-4001-exec-5] c.example.datausersservice.LoginService  : Token created
+2018-07-23 14:53:21.800  INFO 3768 --- [http-nio-4001-exec-7] c.e.datausersservice.LoginController     : Try to login
+2018-07-23 14:53:21.814  INFO 3768 --- [http-nio-4001-exec-7] c.example.datausersservice.LoginService  : Token created
+2018-07-23 15:14:35.477  INFO 12348 --- [main] c.e.d.DataUsersServiceApplication        : No active profile set, falling back to default profiles: default
+2018-07-23 15:14:38.038  WARN 12348 --- [main] c.n.c.sources.URLConfigurationSource     : No URLs will be polled as dynamic configuration sources.
+2018-07-23 15:14:38.043  WARN 12348 --- [main] c.n.c.sources.URLConfigurationSource     : No URLs will be polled as dynamic configuration sources.
+2018-07-23 15:14:40.797  INFO 12348 --- [main] c.e.d.DataUsersServiceApplication        : Started DataUsersServiceApplication in 7.2 seconds (JVM running for 8.073)
+2018-07-23 15:17:01.638  INFO 12348 --- [http-nio-4001-exec-10] c.e.datausersservice.LoginController     : Try to login
+2018-07-23 15:17:02.274  INFO 12348 --- [http-nio-4001-exec-10] c.example.datausersservice.LoginService  : Token created
+2018-07-23 15:22:05.595  INFO 12348 --- [http-nio-4001-exec-9] c.e.datausersservice.LoginController     : Try to login
+2018-07-23 15:22:05.613  INFO 12348 --- [http-nio-4001-exec-9] c.example.datausersservice.LoginService  : Token created
+2018-07-23 15:23:20.559  INFO 12348 --- [http-nio-4001-exec-6] c.e.datausersservice.LoginController     : Try to login
+2018-07-23 15:23:20.574  INFO 12348 --- [http-nio-4001-exec-6] c.example.datausersservice.LoginService  : Token created
+2018-07-23 15:26:00.245  INFO 5284 --- [main] c.e.d.DataUsersServiceApplication        : No active profile set, falling back to default profiles: default
+2018-07-23 15:26:02.589  WARN 5284 --- [main] c.n.c.sources.URLConfigurationSource     : No URLs will be polled as dynamic configuration sources.
+2018-07-23 15:26:02.599  WARN 5284 --- [main] c.n.c.sources.URLConfigurationSource     : No URLs will be polled as dynamic configuration sources.
+2018-07-23 15:26:05.720  INFO 5284 --- [main] c.e.d.DataUsersServiceApplication        : Started DataUsersServiceApplication in 7.554 seconds (JVM running for 8.368)
+2018-07-23 15:27:21.775  INFO 5284 --- [http-nio-4001-exec-10] c.e.datausersservice.LoginController     : Try to login
+2018-07-23 15:27:22.277  INFO 5284 --- [http-nio-4001-exec-10] c.example.datausersservice.LoginService  : Token created
+2018-07-23 15:36:32.107  INFO 7080 --- [main] c.e.d.DataUsersServiceApplication        : No active profile set, falling back to default profiles: default
+2018-07-23 15:36:34.243  WARN 7080 --- [main] c.n.c.sources.URLConfigurationSource     : No URLs will be polled as dynamic configuration sources.
+2018-07-23 15:36:34.248  WARN 7080 --- [main] c.n.c.sources.URLConfigurationSource     : No URLs will be polled as dynamic configuration sources.
+2018-07-23 15:36:37.727  INFO 7080 --- [main] c.e.d.DataUsersServiceApplication        : Started DataUsersServiceApplication in 7.438 seconds (JVM running for 8.137)
+2018-07-23 15:37:09.379  INFO 7080 --- [http-nio-4001-exec-1] c.e.datausersservice.LoginController     : Try to login
+2018-07-23 15:37:10.034  INFO 7080 --- [http-nio-4001-exec-1] c.example.datausersservice.LoginService  : Token created
+2018-07-23 15:42:38.960  INFO 7080 --- [http-nio-4001-exec-3] c.e.datausersservice.LoginController     : Try to login
+2018-07-23 15:42:38.974  INFO 7080 --- [http-nio-4001-exec-3] c.example.datausersservice.LoginService  : Token created
+2018-07-23 15:45:59.571  INFO 7080 --- [http-nio-4001-exec-6] c.e.datausersservice.LoginController     : Try to login
+2018-07-23 15:45:59.584  INFO 7080 --- [http-nio-4001-exec-6] c.example.datausersservice.LoginService  : Token created
+2018-07-23 15:46:47.872  INFO 7080 --- [http-nio-4001-exec-7] c.e.datausersservice.LoginController     : Try to login
+2018-07-23 15:46:47.885  INFO 7080 --- [http-nio-4001-exec-7] c.example.datausersservice.LoginService  : Token created
+2018-07-23 15:49:45.703  INFO 7080 --- [http-nio-4001-exec-9] c.e.datausersservice.LoginController     : Try to login
+2018-07-23 15:49:45.717  INFO 7080 --- [http-nio-4001-exec-9] c.example.datausersservice.LoginService  : Token created
+2018-07-23 15:50:17.861  INFO 7080 --- [http-nio-4001-exec-5] c.e.datausersservice.LoginController     : Try to login
+2018-07-23 15:50:17.874  INFO 7080 --- [http-nio-4001-exec-5] c.example.datausersservice.LoginService  : Token created
+2018-07-23 15:51:12.363  INFO 7080 --- [http-nio-4001-exec-10] c.e.datausersservice.LoginController     : Try to login
+2018-07-23 15:51:12.375  INFO 7080 --- [http-nio-4001-exec-10] c.example.datausersservice.LoginService  : Token created
+2018-07-23 15:54:33.700  INFO 7080 --- [http-nio-4001-exec-2] c.e.datausersservice.LoginController     : Try to login
+2018-07-23 15:54:33.714  INFO 7080 --- [http-nio-4001-exec-2] c.example.datausersservice.LoginService  : Token created
+2018-07-23 15:55:25.410  INFO 7080 --- [http-nio-4001-exec-3] c.e.datausersservice.LoginController     : Try to login
+2018-07-23 15:55:25.423  INFO 7080 --- [http-nio-4001-exec-3] c.example.datausersservice.LoginService  : Token created
+2018-07-23 16:08:39.689  INFO 7080 --- [http-nio-4001-exec-6] c.e.datausersservice.LoginController     : Try to login
+2018-07-23 16:08:39.702  INFO 7080 --- [http-nio-4001-exec-6] c.example.datausersservice.LoginService  : Token created
+2018-07-23 16:11:33.950  INFO 7080 --- [http-nio-4001-exec-8] c.e.datausersservice.LoginController     : Try to login
+2018-07-23 16:11:33.962  INFO 7080 --- [http-nio-4001-exec-8] c.example.datausersservice.LoginService  : Token created
+2018-07-23 16:11:52.566  INFO 7080 --- [http-nio-4001-exec-9] c.e.datausersservice.LoginController     : Try to login
+2018-07-23 16:11:52.577  INFO 7080 --- [http-nio-4001-exec-9] c.example.datausersservice.LoginService  : Token created

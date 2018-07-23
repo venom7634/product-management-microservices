@@ -7,7 +7,8 @@ public class User {
         CLIENT(1);
 
         int number;
-        access(int number){
+
+        access(int number) {
             this.number = number;
         }
 
