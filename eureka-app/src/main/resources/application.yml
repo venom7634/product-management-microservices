@@ -11,15 +11,15 @@ zuul:
   routes:
     login-service:
       path: /login
-      url: http://localhost:1000/
+      url: http://localhost:4001/
       serviceId: login-service
     applications-service:
       path: /applications/**
-      url: http://localhost:2000/applications/
+      url: http://localhost:4002/applications/
       serviceId: applications-service
     products-service:
       path: /products/**
-      url: http://localhost:3000/products/
+      url: http://localhost:4003/products/
       serviceId: products-service
     users-service:
       path: /users/**

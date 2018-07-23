@@ -8,6 +8,8 @@ import com.example.productsservice.entity.User;
 import com.example.productsservice.exceptions.NoAccessException;
 import com.example.productsservice.repositories.ProductsRepository;
 import io.jsonwebtoken.Jwts;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +17,7 @@ import java.util.List;
 
 @Service
 public class ProductService {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final ProductsRepository productsRepository;
     private final UsersServiceClient usersServiceClient;
@@ -28,14 +31,17 @@ public class ProductService {
     }
 
     public Product getDescriptionDebitCard() {
+        logger.info("Try add debit-card");
         return getProductOfName("debit-card");
     }
 
     public Product getDescriptionCreditCard() {
+        logger.info("Try add credit-card");
         return getProductOfName("credit-card");
     }
 
     public Product getDescriptionCreditCash() {
+        logger.info("Try add credit-cash");
         return getProductOfName("credit-cash");
     }
 
@@ -47,7 +53,7 @@ public class ProductService {
                 id = product.getId();
             }
         }
-
+        logger.info("Get product for id = " + id);
         return productsRepository.getProductOfDataBase(id);
     }
 
@@ -87,12 +93,14 @@ public class ProductService {
 
     private void checkUser(User user) {
         if (user == null) {
+            logger.error("User not found");
             throw new NoAccessException();
         }
     }
 
     private void authenticationOfBankEmployee(int securityStatus) {
         if(!(securityStatus == User.access.EMPLOYEE_BANK.getNumber())) {
+            logger.warn("User not employee bank");
             throw new NoAccessException();
         }
     }

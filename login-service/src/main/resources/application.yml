@@ -10,4 +10,4 @@ eureka:
       defaultZone: http://localhost:8080/eureka/
 
 server:
-  port: 1000
+  port: 4001

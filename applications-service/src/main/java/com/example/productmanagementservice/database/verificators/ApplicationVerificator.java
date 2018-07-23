@@ -6,6 +6,8 @@ import com.example.productmanagementservice.exceptions.ApplicationNoExistsExcept
 import com.example.productmanagementservice.exceptions.IncorrectValueException;
 import com.example.productmanagementservice.exceptions.NoAccessException;
 import com.example.productmanagementservice.exceptions.NotMatchUserException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -13,6 +15,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class ApplicationVerificator {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public void checkApplication(List<Application> applications, long idApplication) {
         List<Application> createdApplications =
@@ -24,6 +27,7 @@ public class ApplicationVerificator {
                         .collect(Collectors.toList());
 
         if (createdApplications.isEmpty()) {
+            logger.error("Application no exists");
             throw new ApplicationNoExistsException();
         }
     }
@@ -36,6 +40,7 @@ public class ApplicationVerificator {
                         .collect(Collectors.toList());
 
         if (filteredApplications.isEmpty()) {
+            logger.warn("Application not match user");
             throw new NotMatchUserException();
         }
     }
@@ -48,6 +53,7 @@ public class ApplicationVerificator {
                                 && app.getId() == idApplication)
                         .collect(Collectors.toList());
         if (filteredApplications.isEmpty()) {
+            logger.warn("No access for change status application");
             throw new NoAccessException();
         }
     }
@@ -60,20 +66,24 @@ public class ApplicationVerificator {
                         .collect(Collectors.toList());
 
         if (filteredApplications.isEmpty()) {
+            logger.error("Application no exists");
             throw new ApplicationNoExistsException();
         }
         if (filteredApplications.get(0).getProduct() == null) {
+            logger.warn("Incorrect values");
             throw new IncorrectValueException();
         }
     }
     public void checkUser(User user) {
         if (user == null) {
+            logger.error("User not created");
             throw new NoAccessException();
         }
     }
 
     public void authenticationOfBankEmployee(int securityStatus) {
         if(!(securityStatus == User.access.EMPLOYEE_BANK.getNumber())) {
+            logger.warn("User no employee bank");
             throw new NoAccessException();
         }
     }

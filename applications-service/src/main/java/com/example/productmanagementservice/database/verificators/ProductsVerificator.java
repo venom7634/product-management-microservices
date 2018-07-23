@@ -3,6 +3,8 @@ package com.example.productmanagementservice.database.verificators;
 import com.example.productmanagementservice.clients.ProductsServiceClient;
 import com.example.productmanagementservice.entity.Application;
 import com.example.productmanagementservice.exceptions.NoAccessException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -11,7 +13,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class ProductsVerificator {
-
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final ProductsServiceClient productsServiceClient;
 
     @Autowired
@@ -29,6 +31,7 @@ public class ProductsVerificator {
                         .collect(Collectors.toList());
 
         if (!applicationsWithProduct.isEmpty()) {
+            logger.warn("Such product already exists by user");
             throw new NoAccessException();
         }
 
@@ -43,6 +46,7 @@ public class ProductsVerificator {
         }
 
         if (!allProducts.containsAll(productsInApplications)){
+            logger.warn("User already all products");
             throw new NoAccessException();
         }
     }

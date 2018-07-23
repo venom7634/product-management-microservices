@@ -10,6 +10,8 @@ import com.example.productmanagementservice.entity.Token;
 import com.example.productmanagementservice.entity.User;
 import com.example.productmanagementservice.exceptions.*;
 import io.jsonwebtoken.Jwts;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,7 @@ import java.util.List;
 
 @Service
 public class ApplicationService {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final ApplicationVerificator applicationVerificator;
     private final ProductsVerificator productsVerificator;
@@ -176,11 +179,13 @@ public class ApplicationService {
 
         if (application.getLimit() != null) {
             if ((Integer.parseInt(application.getLimit()) + totalAmount) >= 1000) {
+                logger.warn("Maximum amount reached");
                 throw new MaxAmountCreditReachedException();
             }
         }
         if (application.getAmount() != null) {
             if ((Integer.parseInt(application.getAmount()) + totalAmount) >= 1000) {
+                logger.warn("Maximum amount reached");
                 throw new MaxAmountCreditReachedException();
             }
         }
@@ -192,6 +197,7 @@ public class ApplicationService {
                 return application.getProduct();
             }
         }
+        logger.error("No product in application or application no exists or application no user");
         throw new PageNotFoundException();
     }
 
