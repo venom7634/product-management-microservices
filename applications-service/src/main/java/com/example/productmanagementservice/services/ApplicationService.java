@@ -6,12 +6,14 @@ import com.example.productmanagementservice.database.verificators.ApplicationVer
 import com.example.productmanagementservice.database.verificators.ProductsVerificator;
 import com.example.productmanagementservice.dto.ApplicationResponse;
 import com.example.productmanagementservice.entity.Application;
+import com.example.productmanagementservice.entity.Token;
 import com.example.productmanagementservice.entity.User;
 import com.example.productmanagementservice.exceptions.*;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 @Service
@@ -21,6 +23,9 @@ public class ApplicationService {
     private final ProductsVerificator productsVerificator;
     private final ApplicationsRepository applicationsRepository;
     private final UsersServiceClient usersServiceClient;
+
+    @Resource(name = "token")
+    Token token;
 
     @Autowired
     public ApplicationService(UsersServiceClient usersServiceClient, ApplicationsRepository applicationsRepository,
@@ -32,8 +37,8 @@ public class ApplicationService {
         this.productsVerificator = productsVerificator;
     }
 
-    public ApplicationResponse createApplication(String token) {
-        long id = getIdByToken(token);
+    public ApplicationResponse createApplication() {
+        long id = getIdByToken(token.getToken());
         User user = usersServiceClient.getUserById(id);
         applicationVerificator.checkUser(user);
         List<Application> applications = applicationsRepository.getAllClientApplications(user.getId());
@@ -42,8 +47,8 @@ public class ApplicationService {
         return applicationsRepository.getNewApplication(id);
     }
 
-    public void addDebitCardToApplication(String token, long idApplication) {
-        User user = usersServiceClient.getUserById(getIdByToken(token));
+    public void addDebitCardToApplication( long idApplication) {
+        User user = usersServiceClient.getUserById(getIdByToken(token.getToken()));
         List<Application> applications = applicationsRepository.getAllClientApplications(user.getId());
 
         applicationVerificator.checkApplication(applications, idApplication);
@@ -52,8 +57,8 @@ public class ApplicationService {
         applicationsRepository.addDebitCardToApplication(idApplication);
     }
 
-    public void addCreditCardToApplication(String token, long idApplication, int limit) {
-        User user = usersServiceClient.getUserById(getIdByToken(token));
+    public void addCreditCardToApplication(long idApplication, int limit) {
+        User user = usersServiceClient.getUserById(getIdByToken(token.getToken()));
         List<Application> applications = applicationsRepository.getAllClientApplications(user.getId());
 
         applicationVerificator.checkApplication(applications, idApplication);
@@ -66,8 +71,8 @@ public class ApplicationService {
         }
     }
 
-    public void addCreditCashToApplication(String token, long idApplication, int amount, int timeInMonth) {
-        User user = usersServiceClient.getUserById(getIdByToken(token));
+    public void addCreditCashToApplication( long idApplication, int amount, int timeInMonth) {
+        User user = usersServiceClient.getUserById(getIdByToken(token.getToken()));
         List<Application> applications = applicationsRepository.getAllClientApplications(user.getId());
 
         applicationVerificator.checkApplication(applications, idApplication);
@@ -88,14 +93,14 @@ public class ApplicationService {
                 (getProductApplication(applications, idApplication), applications);
     }
 
-    public List<ApplicationResponse> getApplicationsForApproval(String token) {
-        User user = usersServiceClient.getUserById(getIdByToken(token));
+    public List<ApplicationResponse> getApplicationsForApproval() {
+        User user = usersServiceClient.getUserById(getIdByToken(token.getToken()));
         applicationVerificator.checkUser(user);
         return applicationsRepository.getListSentApplicationsOfDataBase(user.getId());
     }
 
-    public void sendApplicationForApproval(String token, long idApplication) {
-        User user = usersServiceClient.getUserById(getIdByToken(token));
+    public void sendApplicationForApproval( long idApplication) {
+        User user = usersServiceClient.getUserById(getIdByToken(token.getToken()));
         List<Application> applications = applicationsRepository.getAllClientApplications(user.getId());
 
         applicationVerificator.checkUser(user);
@@ -110,8 +115,8 @@ public class ApplicationService {
         applicationsRepository.sendApplicationToConfirmation(idApplication);
     }
 
-    public List<ApplicationResponse> getApplicationsClientForApproval(long userId, String token) {
-        User user = usersServiceClient.getUserById(getIdByToken(token));
+    public List<ApplicationResponse> getApplicationsClientForApproval(long userId) {
+        User user = usersServiceClient.getUserById(getIdByToken(token.getToken()));
 
         applicationVerificator.checkUser(user);
         applicationVerificator.authenticationOfBankEmployee(user.getSecurity());
@@ -119,8 +124,8 @@ public class ApplicationService {
         return applicationsRepository.getListSentApplicationsOfDataBase(userId);
     }
 
-    public void approveApplication(long idApplication, String token) {
-        User user = usersServiceClient.getUserById(getIdByToken(token));
+    public void approveApplication(long idApplication ) {
+        User user = usersServiceClient.getUserById(getIdByToken(token.getToken()));
         List<Application> applications = applicationsRepository
                 .getAllClientApplications(usersServiceClient.getUserById
                         (applicationsRepository.getIdUserByApplications(idApplication)).getId());
@@ -139,8 +144,8 @@ public class ApplicationService {
 
     }
 
-    public void negativeApplication(long idApplication, String token, String reason) {
-        User user = usersServiceClient.getUserById(getIdByToken(token));
+    public void negativeApplication(long idApplication, String reason) {
+        User user = usersServiceClient.getUserById(getIdByToken(token.getToken()));
         List<Application> applications = applicationsRepository
                 .getAllClientApplications(usersServiceClient.getUserById
                         (applicationsRepository.getIdUserByApplications(idApplication)).getId());

@@ -7,10 +7,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.List;
 
-@FeignClient("users-service")
+@FeignClient("products-service")
 public interface ProductsServiceClient {
 
     @RequestMapping(value = "/products/", method = RequestMethod.GET)
     List<String> getAllProducts();
-
 }
