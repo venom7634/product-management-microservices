@@ -1,6 +1,7 @@
-package com.example.fileservice;
+package com.example.fileservice.controllers;
 
-import com.example.fileservice.dto.UserFileResponse;
+import com.example.fileservice.FileRepository;
+import com.example.fileservice.FilesService;
 import com.example.fileservice.entity.UserFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -20,21 +21,14 @@ public class FilesController {
     FileRepository fileRepository;
 
     @RequestMapping(value = "/files", method = RequestMethod.POST)
-    public UserFileResponse loadFileToServer(@RequestParam("file") MultipartFile file){
-        filesService.uploadFile(file);
-        UserFileResponse response = new UserFileResponse();
-        response.setId(filesService.getLastIdFileByUser());
-        return response;
+    public void loadFileToServer(@RequestParam("file") MultipartFile file,
+                                 @RequestParam(value = "id", defaultValue = "-1") long userId){
+        filesService.uploadUserFile(file,userId);
     }
 
     @RequestMapping(value = "/files/{id}", method = RequestMethod.GET)
     public ResponseEntity<InputStreamResource> downloadFile(@PathVariable long id) throws FileNotFoundException {
-        UserFile file = fileRepository.getFileById(id);
-        InputStreamResource body = filesService.createInputStreamFromFile(file);
-
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + file.getName())
-                .body(body);
+       return filesService.downloadFile(id);
     }
 
     @RequestMapping(value = "/files/{id}", method = RequestMethod.DELETE)

@@ -8,8 +8,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface FileRepository {
 
-    @Select("SELECT id FROM files WHERE user_id = #{userId} ORDER BY id desc limit 1")
-    long getLastIdUserFile(@Param("userId") long userId);
 
     @Insert("INSERT INTO files (user_id, name) VALUES (#{userId},#{name})")
     void addFileInDataBase(@Param("userId") long userId, @Param("name") String name);
