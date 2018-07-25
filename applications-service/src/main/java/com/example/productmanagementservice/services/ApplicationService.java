@@ -57,7 +57,7 @@ public class ApplicationService {
         return applicationsRepository.getNewApplication(id);
     }
 
-    public void addDebitCardToApplication( long idApplication) {
+    public void addDebitCardToApplication(long idApplication) {
         User user = usersServiceClient.getUserById(getIdByToken(token.getToken()));
         List<Application> applications = applicationsRepository.getAllClientApplications(user.getId());
 
@@ -81,7 +81,7 @@ public class ApplicationService {
         }
     }
 
-    public void addCreditCashToApplication( long idApplication, int amount, int timeInMonth) {
+    public void addCreditCashToApplication(long idApplication, int amount, int timeInMonth) {
         User user = usersServiceClient.getUserById(getIdByToken(token.getToken()));
         List<Application> applications = applicationsRepository.getAllClientApplications(user.getId());
 
@@ -109,7 +109,7 @@ public class ApplicationService {
         return applicationsRepository.getListSentApplicationsOfDataBase(user.getId());
     }
 
-    public void sendApplicationForApproval( long idApplication) {
+    public void sendApplicationForApproval(long idApplication) {
         User user = usersServiceClient.getUserById(getIdByToken(token.getToken()));
         List<Application> applications = applicationsRepository.getAllClientApplications(user.getId());
 
@@ -134,7 +134,7 @@ public class ApplicationService {
         return applicationsRepository.getListSentApplicationsOfDataBase(userId);
     }
 
-    public void approveApplication(long idApplication ) {
+    public void approveApplication(long idApplication) {
         User user = usersServiceClient.getUserById(getIdByToken(token.getToken()));
         Application application = applicationsRepository.getApplicationById(idApplication);
 
@@ -210,8 +210,8 @@ public class ApplicationService {
 
     private long getIdByToken(String token) {
         int i = token.lastIndexOf('.');
-        String tokenWithoutKey = token.substring(0,i+1);
-        if(tokenWithoutKey.equals("")){
+        String tokenWithoutKey = token.substring(0, i + 1);
+        if (tokenWithoutKey.equals("")) {
             throw new SignatureException("Signature token not valid");
         }
         return Long.parseLong(Jwts.parser().parseClaimsJwt(tokenWithoutKey).getBody().getSubject());

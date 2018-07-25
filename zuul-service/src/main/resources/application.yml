@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: zuul-service
+
+eureka:
+  instance:
+    leaseRenewalIntervalInSeconds: 3
+    metadataMap:
+      instanceId: ${spring.application.name}:${random.value}
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:7777/eureka/
+server:
+  port: 8080
+
+feign:
+  hystrix:
+    enabled : true
+
+zuul:
+  routes:
+    login:
+      path: /account/*
+      serviceId: login-service
+#      url: http://localhost:4001/
+    applications:
+      path: /applications/**
+#      url: http://localhost:4002/applications/
+      serviceId: applications-service
+      stripPrefix: false
+    products:
+      path: /products/**
+      serviceId:  products-service
+      stripPrefix: false
+    users:
+      path: /users/**
+#      url: http://localhost:4000/users/
+      serviceId: users-service
+
+

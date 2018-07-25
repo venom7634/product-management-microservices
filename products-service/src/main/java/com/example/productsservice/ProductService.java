@@ -122,7 +122,7 @@ public class ProductService {
     private long getIdByToken(String token) {
         int i = token.lastIndexOf('.');
         String tokenWithoutKey = token.substring(0, i + 1);
-        if(tokenWithoutKey.equals("")){
+        if (tokenWithoutKey.equals("")) {
             throw new SignatureException("Signature token not valid");
         }
         return Long.parseLong(Jwts.parser().parseClaimsJwt(tokenWithoutKey).getBody().getSubject());

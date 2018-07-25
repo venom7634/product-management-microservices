@@ -10,7 +10,7 @@ public class Application {
 
         private int status;
 
-        statusApp(int status){
+        statusApp(int status) {
             this.status = status;
         }
 

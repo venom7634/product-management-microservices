@@ -30,16 +30,16 @@ public class ProductsVerificator {
 
     }
 
-    public void checkOnAllProductsInApplicationsClient(List<Application> applications, Set<String> allProducts){
+    public void checkOnAllProductsInApplicationsClient(List<Application> applications, Set<String> allProducts) {
         Set<String> productsInApplications = new HashSet<>();
 
-        for(Application application : applications){
-            if(application.getStatus() == Application.statusApp.APPROVED.getStatus()){
+        for (Application application : applications) {
+            if (application.getStatus() == Application.statusApp.APPROVED.getStatus()) {
                 productsInApplications.add(application.getProduct());
             }
         }
 
-        if (productsInApplications.containsAll(allProducts)){
+        if (productsInApplications.containsAll(allProducts)) {
             logger.warn("User already all products");
             throw new NoAccessException();
         }

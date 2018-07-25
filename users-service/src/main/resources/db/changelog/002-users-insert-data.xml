@@ -7,22 +7,22 @@
    http://www.liquibase.org/xml/ns/dbchangelog
    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-  <changeSet id="2" author="m.ryazanov">
-      <insert tableName="users">
-          <column name="login">katya</column>
-          <column name="password">0502</column>
-          <column name="security">0</column>
-          <column name="name">Katya</column>
-          <column name="description">3 years experience</column>
-      </insert>
+    <changeSet id="2" author="m.ryazanov">
+        <insert tableName="users">
+            <column name="login">katya</column>
+            <column name="password">0502</column>
+            <column name="security">0</column>
+            <column name="name">Katya</column>
+            <column name="description">3 years experience</column>
+        </insert>
 
-      <insert tableName="users">
-          <column name="login">victor</column>
-          <column name="password">1234</column>
-          <column name="security">1</column>
-          <column name="name">Victor</column>
-          <column name="description">student</column>
-      </insert>
+        <insert tableName="users">
+            <column name="login">victor</column>
+            <column name="password">1234</column>
+            <column name="security">1</column>
+            <column name="name">Victor</column>
+            <column name="description">student</column>
+        </insert>
 
-  </changeSet>
+    </changeSet>
 </databaseChangeLog>

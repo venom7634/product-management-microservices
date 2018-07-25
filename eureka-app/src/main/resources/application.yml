@@ -1,27 +1,13 @@
+spring:
+  application:
+    name: eureka-server
+
 eureka:
   instance:
     hostname: localhost
   client:
-    registerWithEureka: false
-    fetchRegistry: false
+    serviceUrl:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+    fetch-registry: false
 server:
-  port: 8080
-
-zuul:
-  routes:
-    login-service:
-      path: /login
-      url: http://localhost:4001/
-      serviceId: login-service
-    applications-service:
-      path: /applications/**
-      url: http://localhost:4002/applications/
-      serviceId: applications-service
-    products-service:
-      path: /products/**
-      url: http://localhost:4003/products/
-      serviceId: products-service
-    users-service:
-      path: /users/**
-      url: http://localhost:4000/users/
-      serviceId: users-service
+  port: 7777

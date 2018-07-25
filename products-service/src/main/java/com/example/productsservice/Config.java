@@ -35,7 +35,7 @@ public class Config {
 
     @Bean
     @Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
-    public Token token(){
+    public Token token() {
         Token token = new Token();
         token.setToken(httpServletRequest.getHeader("token"));
         return token;

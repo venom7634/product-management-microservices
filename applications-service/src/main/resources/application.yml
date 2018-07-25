@@ -1,13 +1,13 @@
-spring:
-  application:
-     name: applications-service
-
 eureka:
   instance:
     hostname: localhost
   client:
+    registerWithEureka: true
+    fetchRegistry: true
     serviceUrl:
-      defaultZone: http://localhost:8080/eureka/
+      defaultZone: http://localhost:7777/eureka/
+  server:
+    wait-time-in-ms-when-sync-empty: 3000
 
 server:
   port: 4002

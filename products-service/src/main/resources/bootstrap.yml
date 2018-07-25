@@ -1,0 +1,6 @@
+spring:
+  application:
+     name: products-service
+  profiles:
+    active: products-service1
+

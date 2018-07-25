@@ -14,11 +14,12 @@ import java.util.stream.Collectors;
 public class ApplicationVerificator {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public  void  checkApplication(Application application){
+    public void checkApplication(Application application) {
         if (application == null) {
             throw new PageNotFoundException();
         }
     }
+
     public void checkApplication(List<Application> applications, long idApplication) {
         List<Application> createdApplications =
                 applications
@@ -75,6 +76,7 @@ public class ApplicationVerificator {
             throw new IncorrectValueException();
         }
     }
+
     public void checkUser(User user) {
         if (user == null) {
             logger.error("User not created");
@@ -83,7 +85,7 @@ public class ApplicationVerificator {
     }
 
     public void authenticationOfBankEmployee(int securityStatus) {
-        if(!(securityStatus == User.access.EMPLOYEE_BANK.getNumber())) {
+        if (!(securityStatus == User.access.EMPLOYEE_BANK.getNumber())) {
             logger.warn("User no employee bank");
             throw new NoAccessException();
         }

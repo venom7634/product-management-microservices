@@ -1,14 +1,17 @@
-spring:
-  application:
-     name: products-service
-
+ribbon:
+  eureka:
+    enabled: true
+---
 eureka:
   instance:
     appname: products-service
   client:
+    registerWithEureka: true
+    fetchRegistry: true
     serviceUrl:
-      defaultZone: http://localhost:8080/eureka/
-    fetch-registry: true
+      defaultZone: http://localhost:7777/eureka/
+  server:
+    wait-time-in-ms-when-sync-empty: 3000
 server:
   port: 4003
 
@@ -19,9 +22,9 @@ eureka:
   instance:
     appname: products-service
   client:
-    fetchRegistry: true
+    fetch-registry: true
     serviceUrl:
-      defaultZone:  http://localhost:8080/eureka/
+      defaultZone:  http://localhost:7777/eureka/
 server:
   port: 5003
 ---
@@ -31,9 +34,9 @@ eureka:
   instance:
     appname: products-service
   client:
-    fetchRegistry: true
+    fetch-registry: true
     serviceUrl:
-      defaultZone:  http://localhost:8080/eureka/
+      defaultZone:  http://localhost:7777/eureka/
 server:
   port: 6003
 ---
@@ -43,8 +46,8 @@ eureka:
   instance:
     appname: products-service
   client:
-    fetchRegistry: true
+    fetch-registry: true
     serviceUrl:
-      defaultZone:  http://localhost:8080/eureka/
+      defaultZone:  http://localhost:7777/eureka/
 server:
   port: 7003

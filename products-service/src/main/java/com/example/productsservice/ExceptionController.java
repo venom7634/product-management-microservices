@@ -21,7 +21,7 @@ public class ExceptionController {
     }
 
     @ExceptionHandler(SignatureException.class)
-    protected ResponseEntity incorretValue(RuntimeException ex, WebRequest request){
+    protected ResponseEntity incorretValue(RuntimeException ex, WebRequest request) {
         logger.error("Token not valid");
         return new ResponseEntity(HttpStatus.FORBIDDEN);
     }

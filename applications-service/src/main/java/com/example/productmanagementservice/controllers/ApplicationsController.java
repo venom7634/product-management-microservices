@@ -57,12 +57,14 @@ public class ApplicationsController {
     }
 
     @RequestMapping(value = "/applications/getApprovedStatistics", method = RequestMethod.GET)
-    public List<Statistic> getApprovedStatistics(){
+    public List<Statistic> getApprovedStatistics() {
         return applicationsRepository.getApprovedStatistics();
     }
 
     @RequestMapping(value = "/applications/getNegativeStatistics", method = RequestMethod.GET)
-    public List<Statistic> getNegativeStatistics(){ return applicationsRepository.getNegativeStatistics();    }
+    public List<Statistic> getNegativeStatistics() {
+        return applicationsRepository.getNegativeStatistics();
+    }
 
     @RequestMapping(value = "/applications/{id}/approve", method = RequestMethod.POST)
     public void approveApplication(@PathVariable("id") long idApplication) {
