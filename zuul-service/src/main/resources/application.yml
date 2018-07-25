@@ -22,10 +22,8 @@ zuul:
     login:
       path: /account/*
       serviceId: login-service
-#      url: http://localhost:4001/
     applications:
       path: /applications/**
-#      url: http://localhost:4002/applications/
       serviceId: applications-service
       stripPrefix: false
     products:
@@ -34,7 +32,10 @@ zuul:
       stripPrefix: false
     users:
       path: /users/**
-#      url: http://localhost:4000/users/
       serviceId: users-service
+    files:
+      path: /files/**
+      serviceId: file-service
+      stripPrefix: false
 
 
