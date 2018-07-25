@@ -2,6 +2,7 @@ package com.example.fileservice.controllers;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.SignatureException;
+import org.apache.tomcat.util.http.fileupload.FileUploadBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -12,17 +13,19 @@ import org.springframework.web.context.request.WebRequest;
 
 @ControllerAdvice
 public class ExceptionController {
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @ExceptionHandler(ExpiredJwtException.class)
     protected ResponseEntity expiredToken(RuntimeException ex, WebRequest request) {
-        logger.error("Token expired");
         return new ResponseEntity(HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(SignatureException.class)
     protected ResponseEntity incorretValue(RuntimeException ex, WebRequest request) {
-        logger.error("Token not valid");
+        return new ResponseEntity(HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    protected ResponseEntity maxSizeFile(RuntimeException ex, WebRequest request) {
         return new ResponseEntity(HttpStatus.FORBIDDEN);
     }
 }

@@ -6,10 +6,12 @@ import com.example.fileservice.entity.User;
 import com.example.fileservice.entity.UserFile;
 import com.example.fileservice.exception.FileDamagedException;
 import com.example.fileservice.exception.FileEmptyException;
+import com.example.fileservice.exception.InvalidTypeException;
 import com.example.fileservice.exception.NoAccessException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +21,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.*;
+import java.util.Arrays;
 
 @Service
 public class FilesService {
+
+    @Value("${files.user-file.type-files}")
+    private String[] authorizedTypes;
 
     @Resource(name = "token")
     Token token;
@@ -39,7 +45,16 @@ public class FilesService {
         this.fileRepository = fileRepository;
     }
 
+    private void checkToCorrectTypeFile(MultipartFile file) {
+        String typeFile = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf('.') + 1);
+        if(!Arrays.asList(authorizedTypes).contains(typeFile)){
+            throw new InvalidTypeException();
+        }
+    }
+
     public void uploadUserFile(MultipartFile file, long userId) {
+        checkToCorrectTypeFile(file);
+
         if (userId == -1) {
             uploadUserFileForUser(file);
         } else {
