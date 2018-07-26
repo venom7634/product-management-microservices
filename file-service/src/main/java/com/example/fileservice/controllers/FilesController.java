@@ -2,10 +2,8 @@ package com.example.fileservice.controllers;
 
 import com.example.fileservice.FileRepository;
 import com.example.fileservice.FilesService;
-import com.example.fileservice.entity.UserFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,7 +20,7 @@ public class FilesController {
 
     @RequestMapping(value = "/files", method = RequestMethod.POST)
     public void loadFileToServer(@RequestParam("file") MultipartFile file,
-                                 @RequestParam(value = "id", defaultValue = "-1") long userId){
+                                 @RequestParam(value = "id", defaultValue = "-1", required = false) long userId){
         filesService.uploadUserFile(file,userId);
     }
 

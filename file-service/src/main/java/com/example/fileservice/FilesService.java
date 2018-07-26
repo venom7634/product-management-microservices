@@ -16,7 +16,6 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
@@ -67,8 +66,12 @@ public class FilesService {
         uploadFile(file, userId);
     }
 
+    private User takeUserForToken(){
+        return usersServiceClient.getUserById(getIdByToken(token.getToken()));
+    }
+
     public void uploadUserFileForBank(MultipartFile file, long userId) {
-        User user = usersServiceClient.getUserById(getIdByToken(token.getToken()));
+        User user = takeUserForToken();
         if (!authenticationOfBankEmployee(user.getSecurity())) {
             throw new NoAccessException();
         }
@@ -106,7 +109,7 @@ public class FilesService {
     }
 
     public ResponseEntity<InputStreamResource> downloadFile(long id) throws FileNotFoundException {
-        User user = usersServiceClient.getUserById(getIdByToken(token.getToken()));
+        User user = takeUserForToken();
         UserFile file = fileRepository.getFileById(id);
 
         checkAccessToFile(file, user);
@@ -125,19 +128,23 @@ public class FilesService {
     }
 
     public void deleteUserFile(long id) {
-        User user = usersServiceClient.getUserById(getIdByToken(token.getToken()));
+        User user = takeUserForToken();
         UserFile file = fileRepository.getFileById(id);
 
         checkAccessToFile(file, user);
 
-        String path = "Files-Service/user_" + file.getUserId() + "/" + file.getName();
+        String path = createPath(file);
         File deletedFile = new File(path);
         deletedFile.delete();
         fileRepository.deleteFile(id);
     }
 
+    private String createPath(UserFile file){
+        return "Files-Service/user_" + file.getUserId() + "/" + file.getName();
+    }
+
     public InputStreamResource createInputStreamFromFile(UserFile file) throws FileNotFoundException {
-        String path = "Files-Service/user_" + file.getUserId() + "/" + file.getName();
+        String path = createPath(file);
         File responseFile = new File(path);
 
         return new InputStreamResource(new FileInputStream(responseFile));
