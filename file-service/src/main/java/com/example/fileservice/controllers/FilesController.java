@@ -20,8 +20,8 @@ public class FilesController {
 
     @RequestMapping(value = "/files", method = RequestMethod.POST)
     public void loadFileToServer(@RequestParam("file") MultipartFile file,
-                                 @RequestParam(value = "id", required = false) Long userId) {
-        filesService.uploadUserFile(file, userId);
+                                 @RequestParam(value = "accessibility", defaultValue = "0") Integer accessibility) {
+        filesService.uploadUserFile(file, accessibility);
     }
 
     @RequestMapping(value = "/files/{id}", method = RequestMethod.GET)

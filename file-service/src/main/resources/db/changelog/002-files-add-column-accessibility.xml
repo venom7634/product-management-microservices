@@ -7,6 +7,12 @@
    http://www.liquibase.org/xml/ns/dbchangelog
    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-    <include file="changelog/001-files-create-tables.xml" relativeToChangelogFile=" true "/>
-    <include file="changelog/002-files-add-column-accessibility.xml" relativeToChangelogFile=" true "/>
+    <changeSet id="2" author="m.ryazanov">
+        <addColumn catalogName="files"
+                   schemaName="public"
+                   tableName="files">
+            <column name="accessibility" type="INTEGER"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

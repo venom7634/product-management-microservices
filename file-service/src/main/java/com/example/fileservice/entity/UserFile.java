@@ -2,10 +2,24 @@ package com.example.fileservice.entity;
 
 public class UserFile {
 
+    public enum accessibility{
+        CLOSED(0),
+        OPEN(1);
+
+        int access;
+        accessibility(int access){
+            this.access = access;
+        }
+
+        public int getAccess() {
+            return access;
+        }
+    }
     long id;
     long userId;
     String name;
     long size;
+    int accessibility;
 
     public UserFile() {
 
@@ -41,5 +55,13 @@ public class UserFile {
 
     public void setSize(long size) {
         this.size = size;
+    }
+
+    public int getAccessibility() {
+        return accessibility;
+    }
+
+    public void setAccessibility(int accessibility) {
+        this.accessibility = accessibility;
     }
 }

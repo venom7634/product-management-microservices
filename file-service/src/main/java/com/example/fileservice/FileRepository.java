@@ -11,8 +11,10 @@ import java.util.List;
 public interface FileRepository {
 
 
-    @Insert("INSERT INTO files (user_id, name, size) VALUES (#{userId},#{name},#{size})")
-    void addFileInDataBase(@Param("userId") long userId, @Param("name") String name, @Param("size") long size);
+    @Insert("INSERT INTO files (user_id, name, size, accessibility) " +
+            "VALUES (#{userId},#{name},#{size},#{accessibility})")
+    void addFileInDataBase(@Param("userId") long userId, @Param("name") String name,
+                           @Param("size") long size, @Param("accessibility") int accessibility);
 
     @Select("SELECT *,user_id as userId FROM files WHERE id = #{id}")
     UserFile getFileById(@Param("id") long id);

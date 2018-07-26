@@ -6,6 +6,7 @@ import com.example.fileservice.entity.User;
 import com.example.fileservice.entity.UserFile;
 import com.example.fileservice.exception.FileDamagedException;
 import com.example.fileservice.exception.FileEmptyException;
+import com.example.fileservice.exception.IncorrectAccessibilityValueException;
 import com.example.fileservice.exception.NoAccessException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureException;
@@ -56,16 +57,23 @@ public class FilesService {
         }
     }
 
-    public void uploadUserFile(MultipartFile file, Long userId) {
+    public void uploadUserFile(MultipartFile file, Integer accessibility) {
         fileVerificator.checkToCorrectFile(file);
-        if (userId != null) {
+
+        if(accessibility != 0 && accessibility != 1 && accessibility != null){
+            throw new IncorrectAccessibilityValueException();
+        }
+
+        long userId = getIdByToken(token.getToken());
+
+        if (accessibility != null){
             fileVerificator.checkToMaxAmountSizeFiles
                     (file, fileRepository.getAllUserFiles(userId), getMaxAmountSizeFiles());
 
-            uploadUserFileForBank(file, userId);
+            uploadUserFileForBank(file, accessibility);
         } else {
             fileVerificator.checkToMaxAmountSizeFiles
-                    (file, fileRepository.getAllUserFiles(getIdByToken(token.getToken())), getMaxAmountSizeFiles());
+                    (file, fileRepository.getAllUserFiles(userId), getMaxAmountSizeFiles());
 
             uploadUserFileForUser(file);
         }
@@ -73,27 +81,27 @@ public class FilesService {
 
     public void uploadUserFileForUser(MultipartFile file) {
         long userId = getIdByToken(token.getToken());
-        uploadFile(file, userId);
+        uploadFile(file, userId, UserFile.accessibility.CLOSED.getAccess());
     }
 
     private User takeUserForToken() {
         return usersServiceClient.getUserById(getIdByToken(token.getToken()));
     }
 
-    public void uploadUserFileForBank(MultipartFile file, long userId) {
+    public void uploadUserFileForBank(MultipartFile file, int accessibility) {
         User user = takeUserForToken();
         if (!authenticationOfBankEmployee(user.getSecurity())) {
             throw new NoAccessException();
         }
-        uploadFile(file, userId);
+        uploadFile(file, user.getId(), accessibility);
     }
 
-    private void uploadFile(MultipartFile file, long userId) {
+    private void uploadFile(MultipartFile file, long userId, int accessibility) {
         if (!file.isEmpty()) {
             String path = "Files-Service/user_" + userId + "/";
             fileVerificator.checkIdenticalFiles(path + file.getOriginalFilename());
             uploadFile(file, path);
-            fileRepository.addFileInDataBase(userId, file.getOriginalFilename(), file.getSize());
+            fileRepository.addFileInDataBase(userId, file.getOriginalFilename(), file.getSize(), accessibility);
         } else {
             throw new FileEmptyException();
         }
@@ -122,7 +130,9 @@ public class FilesService {
         User user = takeUserForToken();
         UserFile file = fileRepository.getFileById(id);
 
-        findAccessToFile(file, user);
+        if (file.getAccessibility() == 0) {
+            findAccessToFile(file, user);
+        }
 
         InputStreamResource body = createInputStreamFromFile(file);
 
@@ -141,7 +151,7 @@ public class FilesService {
         User user = takeUserForToken();
         UserFile file = fileRepository.getFileById(id);
 
-        findAccessToFile(file, user);
+        fileVerificator.checkAccessToFile(file, user.getId());
 
         String path = createPath(file);
         File deletedFile = new File(path);
