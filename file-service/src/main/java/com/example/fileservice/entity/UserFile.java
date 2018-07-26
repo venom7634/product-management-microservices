@@ -5,8 +5,9 @@ public class UserFile {
     long id;
     long userId;
     String name;
+    long size;
 
-    public UserFile(){
+    public UserFile() {
 
     }
 
@@ -32,5 +33,13 @@ public class UserFile {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public long getSize() {
+        return size;
+    }
+
+    public void setSize(long size) {
+        this.size = size;
     }
 }

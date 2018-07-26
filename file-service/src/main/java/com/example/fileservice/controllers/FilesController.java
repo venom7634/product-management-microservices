@@ -20,17 +20,17 @@ public class FilesController {
 
     @RequestMapping(value = "/files", method = RequestMethod.POST)
     public void loadFileToServer(@RequestParam("file") MultipartFile file,
-                                 @RequestParam(value = "id", defaultValue = "-1", required = false) long userId){
-        filesService.uploadUserFile(file,userId);
+                                 @RequestParam(value = "id", required = false) Long userId) {
+        filesService.uploadUserFile(file, userId);
     }
 
     @RequestMapping(value = "/files/{id}", method = RequestMethod.GET)
     public ResponseEntity<InputStreamResource> downloadFile(@PathVariable long id) throws FileNotFoundException {
-       return filesService.downloadFile(id);
+        return filesService.downloadFile(id);
     }
 
     @RequestMapping(value = "/files/{id}", method = RequestMethod.DELETE)
-    public void deleteFileByServer(@PathVariable long id){
+    public void deleteFileByServer(@PathVariable long id) {
         filesService.deleteUserFile(id);
     }
 

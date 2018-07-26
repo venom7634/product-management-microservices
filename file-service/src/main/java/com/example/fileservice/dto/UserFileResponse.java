@@ -4,7 +4,7 @@ public class UserFileResponse {
 
     long id;
 
-    public UserFileResponse(){
+    public UserFileResponse() {
 
     }
 

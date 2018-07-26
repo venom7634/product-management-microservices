@@ -6,7 +6,6 @@ import com.example.fileservice.entity.User;
 import com.example.fileservice.entity.UserFile;
 import com.example.fileservice.exception.FileDamagedException;
 import com.example.fileservice.exception.FileEmptyException;
-import com.example.fileservice.exception.InvalidTypeException;
 import com.example.fileservice.exception.NoAccessException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureException;
@@ -20,13 +19,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.*;
-import java.util.Arrays;
 
 @Service
 public class FilesService {
 
-    @Value("${files.user-file.type-files}")
-    private String[] authorizedTypes;
+    @Value("${files.user-file.max-amount-size}")
+    private String maxAmountSizeFiles;
 
     @Resource(name = "token")
     Token token;
@@ -44,20 +42,33 @@ public class FilesService {
         this.fileRepository = fileRepository;
     }
 
-    private void checkToCorrectTypeFile(MultipartFile file) {
-        String typeFile = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf('.') + 1);
-        if(!Arrays.asList(authorizedTypes).contains(typeFile)){
-            throw new InvalidTypeException();
+
+    public long getMaxAmountSizeFiles() {
+        switch (maxAmountSizeFiles.substring(maxAmountSizeFiles.length() - 2)) {
+            case "KB":
+                return Long.valueOf(maxAmountSizeFiles.substring(0, maxAmountSizeFiles.length() - 2)) * 1024;
+            case "MB":
+                return Long.valueOf(maxAmountSizeFiles.substring(0, maxAmountSizeFiles.length() - 2)) * 1024 * 1024;
+            case "GB":
+                return Long.valueOf(maxAmountSizeFiles.substring(0, maxAmountSizeFiles.length() - 2)) * 1024 * 1024 * 1024;
+            default:
+                return Long.valueOf(maxAmountSizeFiles);
         }
     }
 
-    public void uploadUserFile(MultipartFile file, long userId) {
-        checkToCorrectTypeFile(file);
+    public void uploadUserFile(MultipartFile file, Long userId) {
+        fileVerificator.checkToCorrectFile(file);
+//        String test = file.getContentType();
+        if (userId != null) {
+            fileVerificator.checkToMaxAmountSizeFiles
+                    (file, fileRepository.getAllUserFiles(userId), getMaxAmountSizeFiles());
 
-        if (userId == -1) {
-            uploadUserFileForUser(file);
-        } else {
             uploadUserFileForBank(file, userId);
+        } else {
+            fileVerificator.checkToMaxAmountSizeFiles
+                    (file, fileRepository.getAllUserFiles(getIdByToken(token.getToken())), getMaxAmountSizeFiles());
+
+            uploadUserFileForUser(file);
         }
     }
 
@@ -66,7 +77,7 @@ public class FilesService {
         uploadFile(file, userId);
     }
 
-    private User takeUserForToken(){
+    private User takeUserForToken() {
         return usersServiceClient.getUserById(getIdByToken(token.getToken()));
     }
 
@@ -83,7 +94,7 @@ public class FilesService {
             String path = "Files-Service/user_" + userId + "/";
             fileVerificator.checkIdenticalFiles(path + file.getOriginalFilename());
             uploadFile(file, path);
-            fileRepository.addFileInDataBase(userId, file.getOriginalFilename());
+            fileRepository.addFileInDataBase(userId, file.getOriginalFilename(), file.getSize());
         } else {
             throw new FileEmptyException();
         }
@@ -94,13 +105,12 @@ public class FilesService {
             createNewDirectory(path);
         }
         try {
-            byte[] bytes = file.getBytes();
             File newFile = new File(path + file.getOriginalFilename());
             newFile.createNewFile();
 
             BufferedOutputStream stream =
                     new BufferedOutputStream(new FileOutputStream(newFile));
-            stream.write(bytes);
+            stream.write(file.getBytes());
             stream.close();
 
         } catch (Exception e) {
@@ -112,7 +122,7 @@ public class FilesService {
         User user = takeUserForToken();
         UserFile file = fileRepository.getFileById(id);
 
-        checkAccessToFile(file, user);
+        findAccessToFile(file, user);
 
         InputStreamResource body = createInputStreamFromFile(file);
 
@@ -121,7 +131,7 @@ public class FilesService {
                 .body(body);
     }
 
-    private void checkAccessToFile(UserFile file, User user) {
+    private void findAccessToFile(UserFile file, User user) {
         if (!authenticationOfBankEmployee(user.getSecurity())) {
             fileVerificator.checkAccessToFile(file, user.getId());
         }
@@ -131,7 +141,7 @@ public class FilesService {
         User user = takeUserForToken();
         UserFile file = fileRepository.getFileById(id);
 
-        checkAccessToFile(file, user);
+        findAccessToFile(file, user);
 
         String path = createPath(file);
         File deletedFile = new File(path);
@@ -139,7 +149,7 @@ public class FilesService {
         fileRepository.deleteFile(id);
     }
 
-    private String createPath(UserFile file){
+    private String createPath(UserFile file) {
         return "Files-Service/user_" + file.getUserId() + "/" + file.getName();
     }
 

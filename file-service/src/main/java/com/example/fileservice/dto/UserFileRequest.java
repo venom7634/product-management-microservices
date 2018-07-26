@@ -7,7 +7,7 @@ public class UserFileRequest {
     MultipartFile file;
     String name;
 
-    public UserFileRequest(){
+    public UserFileRequest() {
 
     }
 

@@ -1,4 +1,5 @@
 package com.example.fileservice.clients;
+
 import com.example.fileservice.entity.User;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
