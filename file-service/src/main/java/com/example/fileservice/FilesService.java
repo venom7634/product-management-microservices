@@ -1,9 +1,9 @@
 package com.example.fileservice;
 
 import com.example.fileservice.clients.UsersServiceClient;
+import com.example.fileservice.entity.FileUser;
 import com.example.fileservice.entity.Token;
 import com.example.fileservice.entity.User;
-import com.example.fileservice.entity.UserFile;
 import com.example.fileservice.exception.FileDamagedException;
 import com.example.fileservice.exception.FileEmptyException;
 import com.example.fileservice.exception.IncorrectAccessibilityValueException;
@@ -44,7 +44,7 @@ public class FilesService {
     }
 
 
-    public long getMaxAmountSizeFiles() {
+    private long getMaxAmountSizeFiles() {
         switch (maxAmountSizeFiles.substring(maxAmountSizeFiles.length() - 2)) {
             case "KB":
                 return Long.valueOf(maxAmountSizeFiles.substring(0, maxAmountSizeFiles.length() - 2)) * 1024;
@@ -60,13 +60,13 @@ public class FilesService {
     public void uploadUserFile(MultipartFile file, Integer accessibility) {
         fileVerificator.checkToCorrectFile(file);
 
-        if(accessibility != 0 && accessibility != 1 && accessibility != null){
+        if (accessibility != 0 && accessibility != 1) {
             throw new IncorrectAccessibilityValueException();
         }
 
         long userId = getIdByToken(token.getToken());
 
-        if (accessibility != null){
+        if (accessibility == 1) {
             fileVerificator.checkToMaxAmountSizeFiles
                     (file, fileRepository.getAllUserFiles(userId), getMaxAmountSizeFiles());
 
@@ -79,16 +79,16 @@ public class FilesService {
         }
     }
 
-    public void uploadUserFileForUser(MultipartFile file) {
+    private void uploadUserFileForUser(MultipartFile file) {
         long userId = getIdByToken(token.getToken());
-        uploadFile(file, userId, UserFile.accessibility.CLOSED.getAccess());
+        uploadFile(file, userId, FileUser.accessibility.CLOSED.getAccess());
     }
 
     private User takeUserForToken() {
         return usersServiceClient.getUserById(getIdByToken(token.getToken()));
     }
 
-    public void uploadUserFileForBank(MultipartFile file, int accessibility) {
+    private void uploadUserFileForBank(MultipartFile file, int accessibility) {
         User user = takeUserForToken();
         if (!authenticationOfBankEmployee(user.getSecurity())) {
             throw new NoAccessException();
@@ -128,10 +128,10 @@ public class FilesService {
 
     public ResponseEntity<InputStreamResource> downloadFile(long id) throws FileNotFoundException {
         User user = takeUserForToken();
-        UserFile file = fileRepository.getFileById(id);
+        FileUser file = fileRepository.getFileById(id);
 
         if (file.getAccessibility() == 0) {
-            findAccessToFile(file, user);
+            fileVerificator.checkAccessToFile(file, user.getId());
         }
 
         InputStreamResource body = createInputStreamFromFile(file);
@@ -141,29 +141,44 @@ public class FilesService {
                 .body(body);
     }
 
-    private void findAccessToFile(UserFile file, User user) {
-        if (!authenticationOfBankEmployee(user.getSecurity())) {
-            fileVerificator.checkAccessToFile(file, user.getId());
-        }
-    }
-
     public void deleteUserFile(long id) {
         User user = takeUserForToken();
-        UserFile file = fileRepository.getFileById(id);
-
-        fileVerificator.checkAccessToFile(file, user.getId());
+        FileUser file = fileRepository.getFileById(id);
+        User userFile = usersServiceClient.getUserById(file.getUserId());
 
         String path = createPath(file);
         File deletedFile = new File(path);
-        deletedFile.delete();
-        fileRepository.deleteFile(id);
+
+        if (user.getSecurity() == User.access.EMPLOYEE_BANK.getNumber()) {
+            deleteForManager(deletedFile, userFile, user, id);
+        } else {
+            deleteForUser(deletedFile, userFile, user, id);
+        }
     }
 
-    private String createPath(UserFile file) {
+    private void deleteForManager(File deletedFile, User userFile, User user, long id) {
+        if (userFile.getSecurity() == User.access.EMPLOYEE_BANK.getNumber() && userFile.getId() != user.getId()) {
+            throw new NoAccessException();
+        } else {
+            deletedFile.delete();
+            fileRepository.deleteFile(id);
+        }
+    }
+
+    private void deleteForUser(File deletedFile, User userFile, User user, long id) {
+        if (userFile.getId() == user.getId()) {
+            deletedFile.delete();
+            fileRepository.deleteFile(id);
+        } else {
+            throw new NoAccessException();
+        }
+    }
+
+    private String createPath(FileUser file) {
         return "Files-Service/user_" + file.getUserId() + "/" + file.getName();
     }
 
-    public InputStreamResource createInputStreamFromFile(UserFile file) throws FileNotFoundException {
+    private InputStreamResource createInputStreamFromFile(FileUser file) throws FileNotFoundException {
         String path = createPath(file);
         File responseFile = new File(path);
 

@@ -1,6 +1,6 @@
 package com.example.fileservice;
 
-import com.example.fileservice.entity.UserFile;
+import com.example.fileservice.entity.FileUser;
 import com.example.fileservice.exception.IdenticalFilesException;
 import com.example.fileservice.exception.InvalidFileException;
 import com.example.fileservice.exception.MaxAmountSizeException;
@@ -23,11 +23,11 @@ public class FileVerificator {
     private String[] authorizedTypes;
 
 
-    public void checkToMaxAmountSizeFiles(MultipartFile file, List<UserFile> files, long max) {
+    public void checkToMaxAmountSizeFiles(MultipartFile file, List<FileUser> files, long max) {
         long amount = 0;
 
-        for (UserFile userFile : files) {
-            amount += userFile.getSize();
+        for (FileUser fileUser : files) {
+            amount += fileUser.getSize();
         }
 
         if ((amount + file.getSize()) > max) {
@@ -69,7 +69,7 @@ public class FileVerificator {
         }
     }
 
-    public void checkAccessToFile(UserFile file, long userId) {
+    public void checkAccessToFile(FileUser file, long userId) {
         if (file.getUserId() != userId) {
             throw new NoAccessException();
         }

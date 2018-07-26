@@ -1,6 +1,6 @@
 package com.example.fileservice.entity;
 
-public class UserFile {
+public class FileUser {
 
     public enum accessibility{
         CLOSED(0),
@@ -21,7 +21,7 @@ public class UserFile {
     long size;
     int accessibility;
 
-    public UserFile() {
+    public FileUser() {
 
     }
 
