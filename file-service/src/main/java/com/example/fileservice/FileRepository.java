@@ -1,5 +1,6 @@
 package com.example.fileservice;
 
+import com.example.fileservice.entity.Access;
 import com.example.fileservice.entity.FileUser;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
@@ -24,4 +25,7 @@ public interface FileRepository {
 
     @Select("SELECT *, user_id as userId FROM files WHERE user_id = #{userId}")
     List<FileUser> getAllUserFiles(@Param("userId") long userId);
+
+    @Select("SELECT granted_access as grantedAccess, user_id as userId, file_id as fileId FROM access WHERE user_id = #{userId}")
+    List<Access> getAllAccessForUser(@Param("userId") long userId);
 }

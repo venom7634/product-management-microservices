@@ -7,7 +7,18 @@
    http://www.liquibase.org/xml/ns/dbchangelog
    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-    <include file="changelog/001-files-create-tables.xml" relativeToChangelogFile=" true "/>
-    <include file="changelog/002-files-add-column-accessibility.xml" relativeToChangelogFile=" true "/>
-    <include file="changelog/003-files-create-table-access.xml" relativeToChangelogFile=" true "/>
+    <changeSet id="3" author="m.ryazanov">
+        <createTable tableName="access">
+            <column name="user_id" type="int">
+                <constraints  nullable="false"/>
+            </column>
+            <column name="file_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="granted_access" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
 </databaseChangeLog>

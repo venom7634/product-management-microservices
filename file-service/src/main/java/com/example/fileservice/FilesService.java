@@ -1,6 +1,7 @@
 package com.example.fileservice;
 
 import com.example.fileservice.clients.UsersServiceClient;
+import com.example.fileservice.entity.Access;
 import com.example.fileservice.entity.FileUser;
 import com.example.fileservice.entity.Token;
 import com.example.fileservice.entity.User;
@@ -20,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.*;
+import java.util.List;
 
 @Service
 public class FilesService {
@@ -57,7 +59,7 @@ public class FilesService {
         }
     }
 
-    public void uploadUserFile(MultipartFile file, Integer accessibility) {
+    public void uploadUserFile(MultipartFile file, long[] usersId, Integer accessibility) {
         fileVerificator.checkToCorrectFile(file);
 
         if (accessibility != 0 && accessibility != 1) {
@@ -131,7 +133,7 @@ public class FilesService {
         FileUser file = fileRepository.getFileById(id);
 
         if (file.getAccessibility() == 0) {
-            fileVerificator.checkAccessToFile(file, user.getId());
+            checkAccessToFile(file, user);
         }
 
         InputStreamResource body = createInputStreamFromFile(file);
@@ -139,6 +141,24 @@ public class FilesService {
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + file.getName())
                 .body(body);
+    }
+
+    private void checkAccessToFile(FileUser file, User user) {
+        User userFile = usersServiceClient.getUserById(file.getUserId());
+        List<Access> accesses = fileRepository.getAllAccessForUser(user.getId());
+
+        if (userFile.getSecurity() != User.access.EMPLOYEE_BANK.getNumber() && !accessIsExists(accesses, file.getId())) {
+            fileVerificator.checkAccessToFile(file, user.getId());
+        }
+    }
+
+    private boolean accessIsExists(List<Access> accesses, long fileId) {
+        for (Access access : accesses) {
+            if (access.getFileId() == fileId) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void deleteUserFile(long id) {
