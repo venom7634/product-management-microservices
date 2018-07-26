@@ -58,7 +58,6 @@ public class FilesService {
 
     public void uploadUserFile(MultipartFile file, Long userId) {
         fileVerificator.checkToCorrectFile(file);
-//        String test = file.getContentType();
         if (userId != null) {
             fileVerificator.checkToMaxAmountSizeFiles
                     (file, fileRepository.getAllUserFiles(userId), getMaxAmountSizeFiles());
@@ -116,6 +115,7 @@ public class FilesService {
         } catch (Exception e) {
             throw new FileDamagedException();
         }
+
     }
 
     public ResponseEntity<InputStreamResource> downloadFile(long id) throws FileNotFoundException {

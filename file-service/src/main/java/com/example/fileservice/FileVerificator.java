@@ -3,15 +3,18 @@ package com.example.fileservice;
 
 import com.example.fileservice.entity.UserFile;
 import com.example.fileservice.exception.IdenticalFilesException;
-import com.example.fileservice.exception.InvalidTypeException;
+import com.example.fileservice.exception.InvalidFileException;
 import com.example.fileservice.exception.MaxAmountSizeException;
 import com.example.fileservice.exception.NoAccessException;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.j256.simplemagic.ContentInfo;
+import com.j256.simplemagic.ContentInfoUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -41,8 +44,23 @@ public class FileVerificator {
 
     public void checkToCorrectFile(MultipartFile file) {
         String typeFile = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf('.') + 1);
-        if (!Arrays.asList(authorizedTypes).contains(typeFile)) {
-            throw new InvalidTypeException();
+        ContentInfoUtil util = new ContentInfoUtil();
+        ContentInfo info = null;
+
+        try {
+            info = util.findMatch(file.getInputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if (info == null) {
+            if (!"txt".equals(file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf('.') + 1))) {
+                throw new InvalidFileException();
+            }
+        } else {
+            if (!Arrays.asList(authorizedTypes).contains(info.getName()) || !typeFile.equals(info.getName())) {
+                throw new InvalidFileException();
+            }
         }
     }
 
