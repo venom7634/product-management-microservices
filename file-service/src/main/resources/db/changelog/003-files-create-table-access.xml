@@ -9,6 +9,9 @@
 
     <changeSet id="3" author="m.ryazanov">
         <createTable tableName="accesses">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
             <column name="user_id" type="int">
                 <constraints  nullable="false"/>
             </column>

@@ -73,12 +73,11 @@ public class FilesService {
         if (user.getSecurity() == User.access.EMPLOYEE_BANK.getNumber()) {
             uploadUserFileForManager(file, accessibility, usersId, user);
         } else {
-            uploadUserFileForUser(file);
+            uploadUserFileForUser(file, user.getId());
         }
     }
 
-    private void uploadUserFileForUser(MultipartFile file) {
-        long userId = getIdByToken(token.getToken());
+    private void uploadUserFileForUser(MultipartFile file, long userId) {
         uploadFile(file, userId, FileUser.accessibility.CLOSED.getAccess());
     }
 
@@ -89,9 +88,9 @@ public class FilesService {
     private void uploadUserFileForManager(MultipartFile file, int accessibility, long[] usersId, User user) {
         uploadFile(file, user.getId(), accessibility);
 
-        if(usersId != null){
+        if (usersId != null) {
             FileUser fileUser = fileRepository.getLastCreatedFile(user.getId());
-            for(long id : usersId){
+            for (long id : usersId) {
                 fileRepository.addAccessToFileForUser(user.getId(), id, fileUser.getId());
             }
         }
@@ -100,6 +99,9 @@ public class FilesService {
     private void uploadFile(MultipartFile file, long userId, int accessibility) {
         if (!file.isEmpty()) {
             String path = "Files-Service/user_" + userId + "/";
+            if (!fileVerificator.directoryIsExist(path)) {
+                createNewDirectory(path);
+            }
             fileVerificator.checkIdenticalFiles(path + file.getOriginalFilename());
             uploadFile(file, path);
             fileRepository.addFileInDataBase(userId, file.getOriginalFilename(), file.getSize(), accessibility);
@@ -109,9 +111,7 @@ public class FilesService {
     }
 
     private void uploadFile(MultipartFile file, String path) {
-        if (!fileVerificator.directoryIsExist(path)) {
-            createNewDirectory(path);
-        }
+
         try {
             File newFile = new File(path + file.getOriginalFilename());
             newFile.createNewFile();
@@ -179,15 +179,19 @@ public class FilesService {
         if (userFile.getSecurity() == User.access.EMPLOYEE_BANK.getNumber() && userFile.getId() != user.getId()) {
             throw new NoAccessException();
         } else {
-            deletedFile.delete();
-            fileRepository.deleteFile(id);
+            deleteFile(deletedFile, id);
         }
+    }
+
+    private void deleteFile(File deletedFile, long id) {
+        deletedFile.delete();
+        fileRepository.deleteFile(id);
+        fileRepository.deleteAllAccessToFile(id);
     }
 
     private void deleteForUser(File deletedFile, User userFile, User user, long id) {
         if (userFile.getId() == user.getId()) {
-            deletedFile.delete();
-            fileRepository.deleteFile(id);
+            deleteFile(deletedFile, id);
         } else {
             throw new NoAccessException();
         }

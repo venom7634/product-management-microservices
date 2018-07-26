@@ -28,4 +28,9 @@ public class ExceptionController {
     protected ResponseEntity maxSizeFile(RuntimeException ex, WebRequest request) {
         return new ResponseEntity(HttpStatus.FORBIDDEN);
     }
+
+    @ExceptionHandler(NullPointerException.class)
+    protected ResponseEntity nullValue(RuntimeException ex, WebRequest request) {
+        return new ResponseEntity(HttpStatus.NOT_FOUND);
+    }
 }

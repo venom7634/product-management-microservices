@@ -17,8 +17,8 @@ public interface FileRepository {
     void addFileInDataBase(@Param("userId") long userId, @Param("name") String name,
                            @Param("size") long size, @Param("accessibility") int accessibility);
 
-    @Insert("INSERT INTO access (granted_access, user_id, file_id)" +
-            "VALUES (#{grantedAccess}, #{userId}, #{fileId}")
+    @Insert("INSERT INTO accesses (granted_access, user_id, file_id)" +
+            "VALUES (#{grantedAccess}, #{userId}, #{fileId})")
     void addAccessToFileForUser(@Param("grantedAccess") long grantedAccess,
                                 @Param("userId") long userId, @Param("fileId") long fileId);
 
@@ -27,6 +27,9 @@ public interface FileRepository {
 
     @Select("SELECT *,user_id as userId FROM files WHERE id = #{id}")
     FileUser getFileById(@Param("id") long id);
+
+    @Delete("DELETE FROM accesses WHERE file_id = #{fileId}")
+    void deleteAllAccessToFile(@Param("fileId") long fileId);
 
     @Delete("DELETE FROM files WHERE id = #{id}")
     void deleteFile(@Param("id") long id);
