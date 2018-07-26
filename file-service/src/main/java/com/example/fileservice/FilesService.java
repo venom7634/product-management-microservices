@@ -62,21 +62,17 @@ public class FilesService {
     public void uploadUserFile(MultipartFile file, long[] usersId, Integer accessibility) {
         fileVerificator.checkToCorrectFile(file);
 
-        if (accessibility != 0 && accessibility != 1) {
+        if (accessibility != 0 && accessibility != 1 && usersId == null) {
             throw new IncorrectAccessibilityValueException();
         }
+        User user = takeUserForToken();
 
-        long userId = getIdByToken(token.getToken());
+        fileVerificator.checkToMaxAmountSizeFiles
+                (file, fileRepository.getAllUserFiles(user.getId()), getMaxAmountSizeFiles());
 
-        if (accessibility == 1) {
-            fileVerificator.checkToMaxAmountSizeFiles
-                    (file, fileRepository.getAllUserFiles(userId), getMaxAmountSizeFiles());
-
-            uploadUserFileForBank(file, accessibility);
+        if (user.getSecurity() == User.access.EMPLOYEE_BANK.getNumber()) {
+            uploadUserFileForManager(file, accessibility, usersId, user);
         } else {
-            fileVerificator.checkToMaxAmountSizeFiles
-                    (file, fileRepository.getAllUserFiles(userId), getMaxAmountSizeFiles());
-
             uploadUserFileForUser(file);
         }
     }
@@ -90,12 +86,15 @@ public class FilesService {
         return usersServiceClient.getUserById(getIdByToken(token.getToken()));
     }
 
-    private void uploadUserFileForBank(MultipartFile file, int accessibility) {
-        User user = takeUserForToken();
-        if (!authenticationOfBankEmployee(user.getSecurity())) {
-            throw new NoAccessException();
-        }
+    private void uploadUserFileForManager(MultipartFile file, int accessibility, long[] usersId, User user) {
         uploadFile(file, user.getId(), accessibility);
+
+        if(usersId != null){
+            FileUser fileUser = fileRepository.getLastCreatedFile(user.getId());
+            for(long id : usersId){
+                fileRepository.addAccessToFileForUser(user.getId(), id, fileUser.getId());
+            }
+        }
     }
 
     private void uploadFile(MultipartFile file, long userId, int accessibility) {
